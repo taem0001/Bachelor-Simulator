@@ -1,1 +1,4 @@
-# NOTHING TO IGNORE
+# FOLDERS
+.vscode/
+bin/
+build/
