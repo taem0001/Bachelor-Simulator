@@ -4,6 +4,16 @@
 #include "includes.hpp"
 
 namespace Simulator {
+	template <class... Ts> struct overloaded : Ts... {
+			using Ts::operator()...;
+	};
+	template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
+	// Data
+	using Data = std::variant<int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t>;
+	std::ostream &operator<<(std::ostream &out, const Data &data);
+
+	// Tag
 	enum class TAG : unsigned char {
 		UB = 0b000,
 		UH = 0b001,
@@ -12,39 +22,9 @@ namespace Simulator {
 		SH = 0b101,
 		SW = 0b110
 	};
-
 	std::ostream &operator<<(std::ostream &out, TAG tag);
-
-	static inline unsigned char get_tag_sign(const TAG &tag) {
-		switch (tag) {
-		case TAG::UB:
-		case TAG::UH:
-		case TAG::UW:
-			return 0;
-		case TAG::SB:
-		case TAG::SH:
-		case TAG::SW:
-			return 1;
-		};
-	}
-
-	static inline unsigned char get_tag_size(const TAG &tag) {
-		switch (tag) {
-		case TAG::UB:
-		case TAG::SB:
-			return 0b00;
-		case TAG::UH:
-		case TAG::SH:
-			return 0b01;
-		case TAG::UW:
-		case TAG::SW:
-			return 0b10;
-		};
-	}
-
-	static inline TAG get_tag(unsigned char sign, unsigned char size) {
-		return (TAG)((sign << 2) | (size & 0x3));
-	}
+	static inline unsigned char get_tag_sign(const TAG &tag);
+	static inline unsigned char get_tag_size(const TAG &tag);
 } // namespace Simulator
 
 #endif

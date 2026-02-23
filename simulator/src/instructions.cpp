@@ -1,7 +1,31 @@
 #include "../include/instructions.hpp"
 
 namespace Simulator {
-	void handle_instruction(CPU &cpu, int instruction) {
+	void _add_instruction(Register &rd, Register &rs1, Register &rs2) {
+		const auto add_visitor = overloaded{
+			[](auto a, auto b)
+				requires(std::is_integral_v<std::decay_t<decltype(a)>> &&
+						 std::is_integral_v<std::decay_t<decltype(b)>>)
+			{
+				using A = std::decay_t<decltype(a)>;
+				using B = std::decay_t<decltype(b)>;
+				using R = std::common_type_t<A, B>;
+				return Data{static_cast<R>(a) + static_cast<R>(b)};
+			}};
+
+		const auto tag_visitor = overloaded{
+			[](int8_t) { return TAG::SB; },	  [](int16_t) { return TAG::SH; },
+			[](int32_t) { return TAG::SW; },  [](uint8_t) { return TAG::UB; },
+			[](uint16_t) { return TAG::UH; }, [](uint32_t) { return TAG::UW; },
+		};
+
+		const Data add_result = std::visit(add_visitor, rs1.data, rs2.data);
+		const TAG tag_result = std::visit(tag_visitor, add_result);
+
+		rd = {add_result, tag_result};
+	}
+
+	void execute_instruction(CPU &cpu, int instruction) {
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
@@ -30,26 +54,8 @@ namespace Simulator {
 		case 0x2: // SHIFT
 			break;
 		case 0x0: // ADD
-		{
-			unsigned char rs1_sign = get_tag_sign(registers[rs1].tag);
-			unsigned char rs2_sign = get_tag_sign(registers[rs2].tag);
-			unsigned char rs1_size = get_tag_size(registers[rs1].tag);
-			unsigned char rs2_size = get_tag_size(registers[rs2].tag);
-
-			Register res;
-			if (rs1_size > rs2_size) {
-				res = {registers[rs1].data + registers[rs2].data,
-					   registers[rs1].tag};
-			} else if (rs1_size == rs2_size && rs1_sign < rs2_sign) {
-				res = {registers[rs1].data + registers[rs2].data,
-					   registers[rs1].tag};
-			} else {
-				res = {registers[rs1].data + registers[rs2].data,
-					   registers[rs2].tag};
-			}
-
-			registers[rd] = res;
-		} break;
+			_add_instruction(registers[rd], registers[rs1], registers[rs2]);
+			break;
 		case 0x1: // SUB
 			break;
 		default:
