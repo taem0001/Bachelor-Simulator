@@ -23,7 +23,7 @@ namespace Simulator {
 		SH = 0b101,
 		SW = 0b110
 	};
-	std::ostream &operator<<(std::ostream &out, TAG tag);
+	std::ostream &operator<<(std::ostream &out, const TAG &tag);
 	static inline unsigned char get_tag_sign(const TAG &tag);
 	static inline unsigned char get_tag_size(const TAG &tag);
 } // namespace Simulator

@@ -3,18 +3,39 @@
 namespace Simulator {
 	CPU::CPU() : pc(0) { registers.fill({0, TAG::SW}); }
 
-	void CPU::execute_instruction(int instruction) {
+	// Getters/Setters
+	std::array<Register, REGISTERNUM> &CPU::get_registers() {
+		return registers;
+	}
+
+	const std::array<Register, REGISTERNUM> &CPU::get_registers() const {
+		return registers;
+	}
+
+	void CPU::set_register(const char rd, const Data &data, const TAG &tag) {
+		write_to_register(rd, {data, tag});
+	}
+
+	void CPU::write_to_register(const char rd, const Register &r) {
+		if (rd != 0) {
+			registers[rd] = r;
+		}
+	}
+
+	// Instruction functions
+	void CPU::execute_instruction(const int instruction) {
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
 		case 0x33: {
-			char rd = (instruction >> OPCODE_LEN) & 0x1F;
-			char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
-			char rs1 =
+			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			const char func3 =
+				(instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
+			const char rs1 =
 				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
-			char rs2 = (instruction >>
-						(OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) &
-					   0x1F;
+			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN +
+											  FUNC3_LEN + REG_ENC_LEN)) &
+							 0x1F;
 
 			r_instruction(rd, func3, rs1, rs2);
 		} break;
@@ -25,7 +46,8 @@ namespace Simulator {
 		pc += 4;
 	}
 
-	void _add_instruction(Register &rd, Register &rs1, Register &rs2) {
+	// r-type instruction functions
+	Register _add_instruction(const Register &rs1, const Register &rs2) {
 		const auto add_visitor = overloaded{
 			[](auto a, auto b)
 				requires(std::is_integral_v<std::decay_t<decltype(a)>> &&
@@ -46,7 +68,7 @@ namespace Simulator {
 		const Data add_result = std::visit(add_visitor, rs1.data, rs2.data);
 		const TAG tag_result = std::visit(tag_visitor, add_result);
 
-		rd = {add_result, tag_result};
+		return {add_result, tag_result};
 	}
 
 	void CPU::r_instruction(const char rd, const char func3, const char rs1,
@@ -55,8 +77,10 @@ namespace Simulator {
 		case 0x2: // SHIFT
 			break;
 		case 0x0: // ADD
-			_add_instruction(registers[rd], registers[rs1], registers[rs2]);
-			break;
+		{
+			Register result = _add_instruction(registers[rs1], registers[rs2]);
+			write_to_register(rd, result);
+		} break;
 		case 0x1: // SUB
 			break;
 		default:

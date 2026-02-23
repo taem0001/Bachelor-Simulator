@@ -16,7 +16,7 @@ namespace Simulator {
 	}
 
 	// Tag
-	std::ostream &operator<<(std::ostream &out, TAG tag) {
+	std::ostream &operator<<(std::ostream &out, const TAG &tag) {
 		switch (tag) {
 		case TAG::UB:
 			return out << "UB";

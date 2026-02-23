@@ -3,8 +3,10 @@
 
 #include <array>
 #include <cstdlib>
+#include <iomanip>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <variant>
 
 #define REGISTERNUM 32
