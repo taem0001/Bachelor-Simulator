@@ -1,6 +1,30 @@
-#include "../include/instructions.hpp"
+#include "../include/cpu.hpp"
 
 namespace Simulator {
+	CPU::CPU() : pc(0) { registers.fill({0, TAG::SW}); }
+
+	void CPU::execute_instruction(int instruction) {
+		char opcode = instruction & 0x7F;
+
+		switch (opcode) {
+		case 0x33: {
+			char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
+			char rs1 =
+				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
+			char rs2 = (instruction >>
+						(OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) &
+					   0x1F;
+
+			r_instruction(rd, func3, rs1, rs2);
+		} break;
+		default:
+			break;
+		};
+
+		pc += 4;
+	}
+
 	void _add_instruction(Register &rd, Register &rs1, Register &rs2) {
 		const auto add_visitor = overloaded{
 			[](auto a, auto b)
@@ -25,31 +49,8 @@ namespace Simulator {
 		rd = {add_result, tag_result};
 	}
 
-	void execute_instruction(CPU &cpu, int instruction) {
-		char opcode = instruction & 0x7F;
-
-		switch (opcode) {
-		case 0x33: {
-			char rd = (instruction >> OPCODE_LEN) & 0x1F;
-			char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
-			char rs1 =
-				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
-			char rs2 = (instruction >>
-						(OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) &
-					   0x1F;
-
-			r_instruction(cpu.registers, rd, func3, rs1, rs2);
-		} break;
-		default:
-			break;
-		};
-
-		cpu.pc += 4;
-	}
-
-	void r_instruction(std::array<Register, REGISTERNUM> &registers,
-					   const char rd, const char func3, const char rs1,
-					   const char rs2) {
+	void CPU::r_instruction(const char rd, const char func3, const char rs1,
+							const char rs2) {
 		switch (func3) {
 		case 0x2: // SHIFT
 			break;

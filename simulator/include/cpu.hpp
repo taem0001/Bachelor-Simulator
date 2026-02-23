@@ -15,17 +15,19 @@ namespace Simulator {
 			}
 	};
 
-	struct CPU {
+	class CPU {
+		public:
+			CPU();
+			void execute_instruction(int instruction);
+
+			std::array<Register, REGISTERNUM> &get_registers() const;
+
+		private:
 			std::array<Register, REGISTERNUM> registers;
 			int pc;
 
-			CPU() : pc(0) {
-				for (int i = 0; i < REGISTERNUM; i++) {
-					registers[i] = {0, TAG::SW};
-				}
-				registers[3] = {static_cast<uint32_t>(3), TAG::UW};
-				registers[4] = {1, TAG::SW};
-			}
+			void r_instruction(const char rd, const char func3, const char rs1,
+							   const char rs2);
 	};
 } // namespace Simulator
 
