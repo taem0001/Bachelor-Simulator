@@ -1,0 +1,52 @@
+cmake_minimum_required(VERSION 4.0)
+
+project(simulator LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+add_library(simulator_lib
+    simulator/src/cpu.cpp
+    simulator/src/util.cpp
+)
+
+target_include_directories(simulator_lib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/simulator/include
+)
+
+if (MSVC) 
+    target_compile_options(simulator_lib PRIVATE /W4)
+else()
+    target_compile_options(simulator_lib PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+add_executable(simulator
+    simulator/src/main.cpp
+)
+
+target_link_libraries(simulator
+    PRIVATE simulator_lib
+)
+
+enable_testing()
+
+file(GLOB TEST_UNIT_FILES CONFIGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/*.cpp
+)
+
+add_executable(simulator_tests
+    tests/test.cpp
+    ${TEST_UNIT_FILES}
+)
+
+target_include_directories(simulator_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests
+)
+
+target_link_libraries(simulator_tests
+    PRIVATE simulator_lib
+)
+
+add_test(NAME simulator_tests COMMAND simulator_tests)
