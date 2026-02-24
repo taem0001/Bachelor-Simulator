@@ -1,650 +1,196 @@
 #include "add.hpp"
 
 namespace Test::Unit {
-	bool AddTester::i8_i8_test() {
+	static constexpr uint32_t ADD_X7_X5_X6 = 0b00000000011000101000001110110011;
+
+	template <typename A, typename B, typename ExpectedT>
+	static bool add_test(A a, B b, Simulator::TAG tag_a, Simulator::TAG tag_b, ExpectedT expected_val,
+						 Simulator::TAG expected_tag) {
 		Simulator::CPU cpu;
-		int8_t a = 55;
-		int8_t b = 10;
-		cpu.set_register(5, a, Simulator::TAG::SB);
-		cpu.set_register(6, b, Simulator::TAG::SB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
+		cpu.set_register(5, a, tag_a);
+		cpu.set_register(6, b, tag_b);
+		cpu.execute_instruction(ADD_X7_X5_X6);
 
 		const auto registers = cpu.get_registers();
 
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 65;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
+		const bool passed_data = std::holds_alternative<ExpectedT>(registers[7].data) &&
+								 std::get<ExpectedT>(registers[7].data) == expected_val;
+		const bool passed_tag = registers[7].tag == expected_tag;
 		return passed_data && passed_tag;
+	}
+
+	bool AddTester::i8_i8_test() {
+		return add_test<int8_t, int8_t, int>(55, 10, Simulator::TAG::SB, Simulator::TAG::SB, 65, Simulator::TAG::SW);
 	}
 
 	bool AddTester::i16_i16_test() {
-		Simulator::CPU cpu;
-		int16_t a = 300;
-		int16_t b = 340;
-		cpu.set_register(5, a, Simulator::TAG::SH);
-		cpu.set_register(6, b, Simulator::TAG::SH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 640;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int16_t, int16_t, int>(300, 340, Simulator::TAG::SH, Simulator::TAG::SH, 640,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::i32_i32_test() {
-		Simulator::CPU cpu;
-		int32_t a = 23590;
-		int32_t b = 234222;
-		cpu.set_register(5, a, Simulator::TAG::SW);
-		cpu.set_register(6, b, Simulator::TAG::SW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 257812;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int32_t, int32_t, int>(23590, 234222, Simulator::TAG::SW, Simulator::TAG::SW, 257812,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui8_ui8_test() {
-		Simulator::CPU cpu;
-		uint8_t a = 101;
-		uint8_t b = 45;
-		cpu.set_register(5, a, Simulator::TAG::UB);
-		cpu.set_register(6, b, Simulator::TAG::UB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 146;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint8_t, uint8_t, int>(101, 45, Simulator::TAG::UB, Simulator::TAG::UB, 146,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui16_ui16_test() {
-		Simulator::CPU cpu;
-		uint16_t a = 2401;
-		uint16_t b = 3455;
-		cpu.set_register(5, a, Simulator::TAG::UB);
-		cpu.set_register(6, b, Simulator::TAG::UB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 5856;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint16_t, uint16_t, int>(2401, 3455, Simulator::TAG::UB, Simulator::TAG::UB, 5856,
+												 Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui32_ui32_test() {
-		Simulator::CPU cpu;
-		uint32_t a = 2334224;
-		uint32_t b = 1043352;
-		cpu.set_register(5, a, Simulator::TAG::UB);
-		cpu.set_register(6, b, Simulator::TAG::UB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 3377576;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<uint32_t, uint32_t, unsigned int>(2334224u, 1043352u, Simulator::TAG::UB, Simulator::TAG::UB,
+														  3377576u, Simulator::TAG::UW);
 	}
 
 	bool AddTester::i8_i16_test() {
-		Simulator::CPU cpu;
-		int8_t a = 55;
-		int16_t b = 340;
-		cpu.set_register(5, a, Simulator::TAG::SB);
-		cpu.set_register(6, b, Simulator::TAG::SH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 395;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int8_t, int16_t, int>(55, 340, Simulator::TAG::SB, Simulator::TAG::SH, 395, Simulator::TAG::SW);
 	}
 
 	bool AddTester::i8_i32_test() {
-		Simulator::CPU cpu;
-		int8_t a = 10;
-		int32_t b = 234222;
-		cpu.set_register(5, a, Simulator::TAG::SB);
-		cpu.set_register(6, b, Simulator::TAG::SW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 234232;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int8_t, int32_t, int>(10, 234222, Simulator::TAG::SB, Simulator::TAG::SW, 234232,
+											  Simulator::TAG::SW);
 	}
 
 	bool AddTester::i8_ui8_test() {
-		Simulator::CPU cpu;
-		int8_t a = 55;
-		uint8_t b = 45;
-		cpu.set_register(5, a, Simulator::TAG::SB);
-		cpu.set_register(6, b, Simulator::TAG::UB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 100;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int8_t, uint8_t, int>(55, 45, Simulator::TAG::SB, Simulator::TAG::UB, 100, Simulator::TAG::SW);
 	}
 
 	bool AddTester::i8_ui16_test() {
-		Simulator::CPU cpu;
-		int8_t a = 55;
-		uint16_t b = 2401;
-		cpu.set_register(5, a, Simulator::TAG::SB);
-		cpu.set_register(6, b, Simulator::TAG::UH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 2456;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int8_t, uint16_t, int>(55, 2401, Simulator::TAG::SB, Simulator::TAG::UH, 2456,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::i8_ui32_test() {
-		Simulator::CPU cpu;
-		int8_t a = 10;
-		uint32_t b = 1043352;
-		cpu.set_register(5, a, Simulator::TAG::SB);
-		cpu.set_register(6, b, Simulator::TAG::UW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1043362;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<int8_t, uint32_t, unsigned int>(10, 1043352u, Simulator::TAG::SB, Simulator::TAG::UW, 1043362u,
+														Simulator::TAG::UW);
 	}
 
 	bool AddTester::i16_i8_test() {
-		Simulator::CPU cpu;
-		int16_t a = 300;
-		int8_t b = 10;
-		cpu.set_register(5, a, Simulator::TAG::SH);
-		cpu.set_register(6, b, Simulator::TAG::SB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 310;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int16_t, int8_t, int>(300, 10, Simulator::TAG::SH, Simulator::TAG::SB, 310, Simulator::TAG::SW);
 	}
 
 	bool AddTester::i16_i32_test() {
-		Simulator::CPU cpu;
-		int16_t a = 340;
-		int32_t b = 23590;
-		cpu.set_register(5, a, Simulator::TAG::SH);
-		cpu.set_register(6, b, Simulator::TAG::SW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 23930;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int16_t, int32_t, int>(340, 23590, Simulator::TAG::SH, Simulator::TAG::SW, 23930,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::i16_ui8_test() {
-		Simulator::CPU cpu;
-		int16_t a = 300;
-		uint8_t b = 45;
-		cpu.set_register(5, a, Simulator::TAG::SH);
-		cpu.set_register(6, b, Simulator::TAG::UB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 345;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int16_t, uint8_t, int>(300, 45, Simulator::TAG::SH, Simulator::TAG::UB, 345,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::i16_ui16_test() {
-		Simulator::CPU cpu;
-		int16_t a = 300;
-		uint16_t b = 2401;
-		cpu.set_register(5, a, Simulator::TAG::SH);
-		cpu.set_register(6, b, Simulator::TAG::UH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 2701;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int16_t, uint16_t, int>(300, 2401, Simulator::TAG::SH, Simulator::TAG::UH, 2701,
+												Simulator::TAG::SW);
 	}
 
 	bool AddTester::i16_ui32_test() {
-		Simulator::CPU cpu;
-		int16_t a = 340;
-		uint32_t b = 1043352;
-		cpu.set_register(5, a, Simulator::TAG::SH);
-		cpu.set_register(6, b, Simulator::TAG::UW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1043692;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<int16_t, uint32_t, unsigned int>(340, 1043352u, Simulator::TAG::SH, Simulator::TAG::UW,
+														 1043692u, Simulator::TAG::UW);
 	}
 
 	bool AddTester::i32_i8_test() {
-		Simulator::CPU cpu;
-		int32_t a = 23590;
-		int8_t b = 10;
-		cpu.set_register(5, a, Simulator::TAG::SW);
-		cpu.set_register(6, b, Simulator::TAG::SB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 23600;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int32_t, int8_t, int>(23590, 10, Simulator::TAG::SW, Simulator::TAG::SB, 23600,
+											  Simulator::TAG::SW);
 	}
 
 	bool AddTester::i32_i16_test() {
-		Simulator::CPU cpu;
-		int32_t a = 234222;
-		int16_t b = 340;
-		cpu.set_register(5, a, Simulator::TAG::SW);
-		cpu.set_register(6, b, Simulator::TAG::SH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 234562;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int32_t, int16_t, int>(234222, 340, Simulator::TAG::SW, Simulator::TAG::SH, 234562,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::i32_ui8_test() {
-		Simulator::CPU cpu;
-		int32_t a = 23590;
-		uint8_t b = 45;
-		cpu.set_register(5, a, Simulator::TAG::SW);
-		cpu.set_register(6, b, Simulator::TAG::UB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 23635;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int32_t, uint8_t, int>(23590, 45, Simulator::TAG::SW, Simulator::TAG::UB, 23635,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::i32_ui16_test() {
-		Simulator::CPU cpu;
-		int32_t a = 23590;
-		uint16_t b = 2401;
-		cpu.set_register(5, a, Simulator::TAG::SW);
-		cpu.set_register(6, b, Simulator::TAG::UH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 25991;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<int32_t, uint16_t, int>(23590, 2401, Simulator::TAG::SW, Simulator::TAG::UH, 25991,
+												Simulator::TAG::SW);
 	}
 
 	bool AddTester::i32_ui32_test() {
-		Simulator::CPU cpu;
-		int32_t a = 23590;
-		uint32_t b = 1043352;
-		cpu.set_register(5, a, Simulator::TAG::SW);
-		cpu.set_register(6, b, Simulator::TAG::UW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1066942;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<int32_t, uint32_t, unsigned int>(23590, 1043352u, Simulator::TAG::SW, Simulator::TAG::UW,
+														 1066942u, Simulator::TAG::UW);
 	}
 
 	bool AddTester::ui8_i8_test() {
-		Simulator::CPU cpu;
-		uint8_t a = 101;
-		int8_t b = 10;
-		cpu.set_register(5, a, Simulator::TAG::UB);
-		cpu.set_register(6, b, Simulator::TAG::SB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 111;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint8_t, int8_t, int>(101, 10, Simulator::TAG::UB, Simulator::TAG::SB, 111, Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui8_i16_test() {
-		Simulator::CPU cpu;
-		uint8_t a = 101;
-		int16_t b = 300;
-		cpu.set_register(5, a, Simulator::TAG::UB);
-		cpu.set_register(6, b, Simulator::TAG::SH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 401;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint8_t, int16_t, int>(101, 300, Simulator::TAG::UB, Simulator::TAG::SH, 401,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui8_i32_test() {
-		Simulator::CPU cpu;
-		uint8_t a = 45;
-		int32_t b = 23590;
-		cpu.set_register(5, a, Simulator::TAG::UB);
-		cpu.set_register(6, b, Simulator::TAG::SW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 23635;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint8_t, int32_t, int>(45, 23590, Simulator::TAG::UB, Simulator::TAG::SW, 23635,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui8_ui16_test() {
-		Simulator::CPU cpu;
-		uint8_t a = 45;
-		uint16_t b = 2401;
-		cpu.set_register(5, a, Simulator::TAG::UB);
-		cpu.set_register(6, b, Simulator::TAG::UH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 2446;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint8_t, uint16_t, int>(45, 2401, Simulator::TAG::UB, Simulator::TAG::UH, 2446,
+												Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui8_ui32_test() {
-		Simulator::CPU cpu;
-		uint8_t a = 45;
-		uint32_t b = 1043352;
-		cpu.set_register(5, a, Simulator::TAG::UB);
-		cpu.set_register(6, b, Simulator::TAG::UW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1043397;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<uint8_t, uint32_t, unsigned int>(45, 1043352u, Simulator::TAG::UB, Simulator::TAG::UW, 1043397u,
+														 Simulator::TAG::UW);
 	}
 
 	bool AddTester::ui16_i8_test() {
-		Simulator::CPU cpu;
-		uint16_t a = 2401;
-		int8_t b = 10;
-		cpu.set_register(5, a, Simulator::TAG::UH);
-		cpu.set_register(6, b, Simulator::TAG::SB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 2411;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint16_t, int8_t, int>(2401, 10, Simulator::TAG::UH, Simulator::TAG::SB, 2411,
+											   Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui16_i16_test() {
-		Simulator::CPU cpu;
-		uint16_t a = 3455;
-		int16_t b = 300;
-		cpu.set_register(5, a, Simulator::TAG::UH);
-		cpu.set_register(6, b, Simulator::TAG::SH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 3755;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint16_t, int16_t, int>(3455, 300, Simulator::TAG::UH, Simulator::TAG::SH, 3755,
+												Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui16_i32_test() {
-		Simulator::CPU cpu;
-		uint16_t a = 2401;
-		int32_t b = 23590;
-		cpu.set_register(5, a, Simulator::TAG::UH);
-		cpu.set_register(6, b, Simulator::TAG::SW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 25991;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint16_t, int32_t, int>(2401, 23590, Simulator::TAG::UH, Simulator::TAG::SW, 25991,
+												Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui16_ui8_test() {
-		Simulator::CPU cpu;
-		uint16_t a = 2401;
-		uint8_t b = 45;
-		cpu.set_register(5, a, Simulator::TAG::UH);
-		cpu.set_register(6, b, Simulator::TAG::UB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<int>(registers[7].data) &&
-			std::get<int>(registers[7].data) == 2446;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::SW;
-		return passed_data && passed_tag;
+		return add_test<uint16_t, uint8_t, int>(2401, 45, Simulator::TAG::UH, Simulator::TAG::UB, 2446,
+												Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui16_ui32_test() {
-		Simulator::CPU cpu;
-		uint16_t a = 3455;
-		uint32_t b = 1043352;
-		cpu.set_register(5, a, Simulator::TAG::UH);
-		cpu.set_register(6, b, Simulator::TAG::UW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1046807;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<uint16_t, uint32_t, unsigned int>(3455, 1043352u, Simulator::TAG::UH, Simulator::TAG::UW,
+														  1046807u, Simulator::TAG::UW);
 	}
 
 	bool AddTester::ui32_i8_test() {
-		Simulator::CPU cpu;
-		uint32_t a = 1043352;
-		int8_t b = 10;
-		cpu.set_register(5, a, Simulator::TAG::UW);
-		cpu.set_register(6, b, Simulator::TAG::SB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1043362;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<uint32_t, int8_t, unsigned int>(1043352u, 10, Simulator::TAG::UW, Simulator::TAG::SB, 1043362u,
+														Simulator::TAG::UW);
 	}
 
 	bool AddTester::ui32_i16_test() {
-		Simulator::CPU cpu;
-		uint32_t a = 1043352;
-		int16_t b = 340;
-		cpu.set_register(5, a, Simulator::TAG::UW);
-		cpu.set_register(6, b, Simulator::TAG::SH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1043692;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<uint32_t, int16_t, unsigned int>(1043352u, 340, Simulator::TAG::UW, Simulator::TAG::SH,
+														 1043692u, Simulator::TAG::UW);
 	}
 
 	bool AddTester::ui32_i32_test() {
-		Simulator::CPU cpu;
-		uint32_t a = 1043352;
-		int32_t b = 23590;
-		cpu.set_register(5, a, Simulator::TAG::UW);
-		cpu.set_register(6, b, Simulator::TAG::SW);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1066942;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<uint32_t, int32_t, unsigned int>(1043352u, 23590, Simulator::TAG::UW, Simulator::TAG::SW,
+														 1066942u, Simulator::TAG::UW);
 	}
 
 	bool AddTester::ui32_ui8_test() {
-		Simulator::CPU cpu;
-		uint32_t a = 1043352;
-		uint8_t b = 45;
-		cpu.set_register(5, a, Simulator::TAG::UW);
-		cpu.set_register(6, b, Simulator::TAG::UB);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1043397;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<uint32_t, uint8_t, unsigned int>(1043352u, 45, Simulator::TAG::UW, Simulator::TAG::UB, 1043397u,
+														 Simulator::TAG::UW);
 	}
 
 	bool AddTester::ui32_ui16_test() {
-		Simulator::CPU cpu;
-		uint32_t a = 1043352;
-		uint16_t b = 3455;
-		cpu.set_register(5, a, Simulator::TAG::UW);
-		cpu.set_register(6, b, Simulator::TAG::UH);
-		cpu.execute_instruction(0b00000000011000101000001110110011);
-
-		const std::array<Simulator::Register, REGISTERNUM> registers =
-			cpu.get_registers();
-
-		const bool passed_data =
-			std::holds_alternative<unsigned int>(registers[7].data) &&
-			std::get<unsigned int>(registers[7].data) == 1046807;
-		const bool passed_tag = registers[7].tag == Simulator::TAG::UW;
-		return passed_data && passed_tag;
+		return add_test<uint32_t, uint16_t, unsigned int>(1043352u, 3455, Simulator::TAG::UW, Simulator::TAG::UH,
+														  1046807u, Simulator::TAG::UW);
 	}
 } // namespace Test::Unit

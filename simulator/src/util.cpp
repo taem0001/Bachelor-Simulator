@@ -3,15 +3,11 @@
 namespace Simulator {
 	// Data
 	std::ostream &operator<<(std::ostream &out, const Data &data) {
-		std::visit(
-			overloaded{
-				[&](int8_t value) { out << static_cast<int>(value); },
-				[&](uint8_t value) { out << static_cast<unsigned int>(value); },
-				[&](int16_t value) { out << value; },
-				[&](uint16_t value) { out << value; },
-				[&](int32_t value) { out << value; },
-				[&](uint32_t value) { out << value; }},
-			data);
+		std::visit(overloaded{[&](int8_t value) { out << static_cast<int>(value); },
+							  [&](uint8_t value) { out << static_cast<unsigned int>(value); },
+							  [&](int16_t value) { out << value; }, [&](uint16_t value) { out << value; },
+							  [&](int32_t value) { out << value; }, [&](uint32_t value) { out << value; }},
+				   data);
 		return out;
 	}
 

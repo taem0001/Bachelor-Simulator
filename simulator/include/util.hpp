@@ -15,14 +15,7 @@ namespace Simulator {
 	std::ostream &operator<<(std::ostream &out, const Data &data);
 
 	// Tag
-	enum class TAG : unsigned char {
-		UB = 0b000,
-		UH = 0b001,
-		UW = 0b010,
-		SB = 0b100,
-		SH = 0b101,
-		SW = 0b110
-	};
+	enum class TAG : unsigned char { UB = 0b000, UH = 0b001, UW = 0b010, SB = 0b100, SH = 0b101, SW = 0b110 };
 	std::ostream &operator<<(std::ostream &out, const TAG &tag);
 	static inline unsigned char get_tag_sign(const TAG &tag);
 	static inline unsigned char get_tag_size(const TAG &tag);

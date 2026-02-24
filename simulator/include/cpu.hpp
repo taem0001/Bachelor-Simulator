@@ -9,8 +9,7 @@ namespace Simulator {
 			Data data;
 			TAG tag;
 
-			friend std::ostream &operator<<(std::ostream &out,
-											const Register &r) noexcept {
+			friend std::ostream &operator<<(std::ostream &out, const Register &r) noexcept {
 				return out << "(" << r.data << "; " << r.tag << ")";
 			}
 	};
@@ -32,8 +31,7 @@ namespace Simulator {
 
 			void write_to_register(const char rd, const Register &r);
 
-			void r_instruction(const char rd, const char func3, const char rs1,
-							   const char rs2);
+			void r_instruction(const char rd, const char func3, const char rs1, const char rs2);
 	};
 } // namespace Simulator
 
