@@ -39,12 +39,12 @@ namespace Test::Unit {
 	}
 
 	bool AddTester::ui16_ui16_test() {
-		return add_test<uint16_t, uint16_t, int>(2401, 3455, Simulator::TAG::UB, Simulator::TAG::UB, 5856,
+		return add_test<uint16_t, uint16_t, int>(2401, 3455, Simulator::TAG::UH, Simulator::TAG::UH, 5856,
 												 Simulator::TAG::SW);
 	}
 
 	bool AddTester::ui32_ui32_test() {
-		return add_test<uint32_t, uint32_t, unsigned int>(2334224u, 1043352u, Simulator::TAG::UB, Simulator::TAG::UB,
+		return add_test<uint32_t, uint32_t, unsigned int>(2334224u, 1043352u, Simulator::TAG::UW, Simulator::TAG::UW,
 														  3377576u, Simulator::TAG::UW);
 	}
 

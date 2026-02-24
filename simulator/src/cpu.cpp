@@ -1,6 +1,11 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
+	constexpr auto tag_visitor = overloaded{
+		[](int8_t) { return TAG::SB; },	 [](int16_t) { return TAG::SH; },  [](int32_t) { return TAG::SW; },
+		[](uint8_t) { return TAG::UB; }, [](uint16_t) { return TAG::UH; }, [](uint32_t) { return TAG::UW; },
+	};
+
 	CPU::CPU() : pc(0) { registers.fill({0, TAG::SW}); }
 
 	// Getters/Setters
@@ -48,15 +53,27 @@ namespace Simulator {
 				return Data{static_cast<R>(a) + static_cast<R>(b)};
 			}};
 
-		const auto tag_visitor = overloaded{
-			[](int8_t) { return TAG::SB; },	 [](int16_t) { return TAG::SH; },  [](int32_t) { return TAG::SW; },
-			[](uint8_t) { return TAG::UB; }, [](uint16_t) { return TAG::UH; }, [](uint32_t) { return TAG::UW; },
-		};
-
 		const Data add_result = std::visit(add_visitor, rs1.data, rs2.data);
 		const TAG tag_result = std::visit(tag_visitor, add_result);
 
 		return {add_result, tag_result};
+	}
+
+	Register _sub_instruction(const Register &rs1, const Register &rs2) {
+		const auto sub_visitor = overloaded{
+			[](auto a, auto b)
+				requires(std::is_integral_v<std::decay_t<decltype(a)>> && std::is_integral_v<std::decay_t<decltype(b)>>)
+			{
+				using A = std::decay_t<decltype(a)>;
+				using B = std::decay_t<decltype(b)>;
+				using R = std::common_type_t<A, B>;
+				return Data{static_cast<R>(a) - static_cast<R>(b)};
+			}};
+
+		const Data sub_result = std::visit(sub_visitor, rs1.data, rs2.data);
+		const TAG tag_result = std::visit(tag_visitor, sub_result);
+
+		return {sub_result, tag_result};
 	}
 
 	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2) {
@@ -69,7 +86,10 @@ namespace Simulator {
 			write_to_register(rd, result);
 		} break;
 		case 0x1: // SUB
-			break;
+		{
+			Register result = _sub_instruction(registers[rs1], registers[rs2]);
+			write_to_register(rd, result);
+		} break;
 		default:
 			break;
 		}

@@ -15,17 +15,14 @@ namespace Test {
 	inline const std::string RESET = "\x1b[0m";
 
 	inline void print_header() {
-		std::cout << MAGENTA << std::left << std::setw(16) << "INSTRUCTION"
-				  << RESET << MAGENTA << std::setw(16) << "OPERATION" << RESET
-				  << MAGENTA << "RESULT" << RESET << std::endl;
+		std::cout << MAGENTA << std::left << std::setw(16) << "INSTRUCTION" << RESET << MAGENTA << std::setw(16)
+				  << "OPERATION" << RESET << MAGENTA << "RESULT" << RESET << std::endl;
 	}
 
-	inline void print_result(Stats &s, const std::string &instr,
-							 const std::string &variant, bool ok) {
+	inline void print_result(Stats &s, const std::string &instr, const std::string &variant, bool ok) {
 		std::cout << std::left << std::setw(16) << instr;
 		std::cout << std::setw(16) << variant;
-		std::cout << (ok ? (std::string(GREEN) + "PASSED" + RESET)
-						 : (std::string(RED) + "FAILED" + RESET))
+		std::cout << (ok ? (std::string(GREEN) + "PASSED" + RESET) : (std::string(RED) + "FAILED" + RESET))
 				  << std::endl;
 		ok ? ++s.passed : ++s.failed;
 	}
