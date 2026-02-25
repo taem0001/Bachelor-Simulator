@@ -26,6 +26,14 @@ namespace Simulator {
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
+		case 0x13: {
+			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
+			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
+			const short imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN));
+
+			i_instruction(rd, func3, rs1, imm);
+		} break;
 		case 0x33: {
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
@@ -76,10 +84,15 @@ namespace Simulator {
 		return {sub_result, tag_result};
 	}
 
+	Register _shift_instruction(const Register &rs1, const Register &rs2) {}
+
 	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2) {
 		switch (func3) {
 		case 0x2: // SHIFT
-			break;
+		{
+			Register result = _shift_instruction(registers[rs2], registers[rs2]);
+			write_to_register(rd, result);
+		} break;
 		case 0x0: // ADD
 		{
 			Register result = _add_instruction(registers[rs1], registers[rs2]);
@@ -90,6 +103,38 @@ namespace Simulator {
 			Register result = _sub_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
+		default:
+			break;
+		}
+	}
+
+	// i-type instruction functions
+	Register _sli_instruction(const Register &rs1, const int8_t imm) {
+		const Data sli_result = std::visit(overloaded{[&](auto value)
+														  requires(std::is_integral_v<std::decay_t<decltype(value)>>)
+													  {
+														  using A = std::decay_t<decltype(value)>;
+														  const uint8_t shamt = static_cast<uint8_t>(imm);
+
+														  using UA = std::make_unsigned_t<A>;
+														  const UA v = static_cast<UA>(value);
+														  return Data{static_cast<A>(v << shamt)};
+													  }},
+													  rs1.data);
+
+		return {sli_result, rs1.tag};
+	}
+
+	void CPU::i_instruction(const char rd, const char func3, const char rs1, const short imm) {
+		switch (func3) {
+		case 0x1: // SLI
+		{
+			if (((imm >> 5) & 0x7F) != 0) break;
+			Register result = _sli_instruction(registers[rs1], imm & 0x1F);
+			write_to_register(rd, result);
+		} break;
+		case 0x5: // SRI
+			break;
 		default:
 			break;
 		}

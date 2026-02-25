@@ -1,5 +1,6 @@
 #include "unit/add.hpp"
 #include "unit/sub.hpp"
+#include "unit/sli.hpp"
 
 void add_test(Test::Stats &stats) {
     {
@@ -305,9 +306,21 @@ void sub_test(Test::Stats &stats) {
     }
 }
 
+
 void r_tests(Test::Stats &stats) {
     add_test(stats);
     sub_test(stats);
+}
+
+void sli_test(Test::Stats &stats) {
+    {
+        bool ok = Test::Unit::SliTester::i8_test();
+        Test::print_result(stats, "SLI", "i8 <<", ok);
+    }
+}
+
+void i_tests(Test::Stats &stats) {
+    sli_test(stats);
 }
 
 int main() {
@@ -315,6 +328,7 @@ int main() {
     Test::print_header();
 
     r_tests(stats);
+    i_tests(stats);
 
     std::cout << std::endl
               << "Passed: " << stats.passed << "  Failed: " << stats.failed
