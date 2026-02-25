@@ -29,6 +29,7 @@ namespace Simulator {
 		default:
 			break;
 		}
+		return out << "";
 	}
 
 	static inline unsigned char get_tag_sign(const TAG &tag) {

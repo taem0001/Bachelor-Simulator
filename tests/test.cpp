@@ -315,7 +315,27 @@ void r_tests(Test::Stats &stats) {
 void sli_test(Test::Stats &stats) {
     {
         bool ok = Test::Unit::SliTester::i8_test();
-        Test::print_result(stats, "SLI", "i8 <<", ok);
+        Test::print_result(stats, "SLI", "i8 << i8", ok);
+    }
+    {
+        bool ok = Test::Unit::SliTester::i16_test();
+        Test::print_result(stats, "SLI", "i16 << i16", ok);
+    }
+    {
+        bool ok = Test::Unit::SliTester::i32_test();
+        Test::print_result(stats, "SLI", "i32 << i32", ok);
+    }
+    {
+        bool ok = Test::Unit::SliTester::ui8_test();
+        Test::print_result(stats, "SLI", "ui8 << ui8", ok);
+    }
+    {
+        bool ok = Test::Unit::SliTester::ui16_test();
+        Test::print_result(stats, "SLI", "ui16 << ui16", ok);
+    }
+    {
+        bool ok = Test::Unit::SliTester::ui32_test();
+        Test::print_result(stats, "SLI", "ui32 << ui32", ok);
     }
 }
 
