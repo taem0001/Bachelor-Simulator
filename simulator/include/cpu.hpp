@@ -6,8 +6,8 @@
 
 namespace Simulator {
 	struct Register {
-			Data data;
-			TAG tag;
+			uint32_t data;
+			Tag tag;
 
 			friend std::ostream &operator<<(std::ostream &out, const Register &r) noexcept {
 				return out << "(" << r.data << "; " << r.tag << ")";
@@ -23,7 +23,7 @@ namespace Simulator {
 			const std::array<Register, REGISTERNUM> &get_registers() const;
 
 			// TODO: THIS FUNCTION IS ONLY FOR TESTING PURPOSES; REMOVE LATER
-			void set_register(const char rd, const Data &data, const TAG &tag);
+			void set_register(const char rd, const uint32_t data, const Tag &tag);
 
 		private:
 			std::array<Register, REGISTERNUM> registers;

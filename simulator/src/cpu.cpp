@@ -2,18 +2,18 @@
 
 namespace Simulator {
 	constexpr auto tag_visitor = overloaded{
-		[](int8_t) { return TAG::SB; },	 [](int16_t) { return TAG::SH; },  [](int32_t) { return TAG::SW; },
-		[](uint8_t) { return TAG::UB; }, [](uint16_t) { return TAG::UH; }, [](uint32_t) { return TAG::UW; },
+		[](int8_t) { return Tag::SB; },	 [](int16_t) { return Tag::SH; },  [](int32_t) { return Tag::SW; },
+		[](uint8_t) { return Tag::UB; }, [](uint16_t) { return Tag::UH; }, [](uint32_t) { return Tag::UW; },
 	};
 
-	CPU::CPU() : pc(0) { registers.fill({0, TAG::SW}); }
+	CPU::CPU() : pc(0) { registers.fill({0, Tag::SW}); }
 
 	// Getters/Setters
 	std::array<Register, REGISTERNUM> &CPU::get_registers() { return registers; }
 
 	const std::array<Register, REGISTERNUM> &CPU::get_registers() const { return registers; }
 
-	void CPU::set_register(const char rd, const Data &data, const TAG &tag) { write_to_register(rd, {data, tag}); }
+	void CPU::set_register(const char rd, const uint32_t data, const Tag &tag) { write_to_register(rd, {data, tag}); }
 
 	void CPU::write_to_register(const char rd, const Register &r) {
 		if (rd != 0) {
@@ -51,20 +51,8 @@ namespace Simulator {
 
 	// r-type instruction functions
 	Register _add_instruction(const Register &rs1, const Register &rs2) {
-		const auto add_visitor = overloaded{
-			[](auto a, auto b)
-				requires(std::is_integral_v<std::decay_t<decltype(a)>> && std::is_integral_v<std::decay_t<decltype(b)>>)
-			{
-				using A = std::decay_t<decltype(a)>;
-				using B = std::decay_t<decltype(b)>;
-				using R = std::common_type_t<A, B>;
-				return Data{static_cast<R>(a) + static_cast<R>(b)};
-			}};
-
-		const Data add_result = std::visit(add_visitor, rs1.data, rs2.data);
-		const TAG tag_result = std::visit(tag_visitor, add_result);
-
-		return {add_result, tag_result};
+		Tag rs1_tag = rs1.tag;
+		Tag rs2_tag = rs2.tag;
 	}
 
 	Register _sub_instruction(const Register &rs1, const Register &rs2) {
@@ -79,12 +67,12 @@ namespace Simulator {
 			}};
 
 		const Data sub_result = std::visit(sub_visitor, rs1.data, rs2.data);
-		const TAG tag_result = std::visit(tag_visitor, sub_result);
+		const Tag tag_result = std::visit(tag_visitor, sub_result);
 
 		return {sub_result, tag_result};
 	}
 
-	Register _shift_instruction(const Register &rs1, const Register &rs2) { return {0, TAG::SW}; }
+	Register _shift_instruction(const Register &rs1, const Register &rs2) { return {0, Tag::SW}; }
 
 	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2) {
 		switch (func3) {
@@ -121,7 +109,7 @@ namespace Simulator {
 														  return Data{static_cast<A>(v << shamt)};
 													  }},
 													  rs1.data);
-		const TAG tag_result = std::visit(tag_visitor, sli_result);
+		const Tag tag_result = std::visit(tag_visitor, sli_result);
 
 		return {sli_result, tag_result};
 	}
@@ -136,7 +124,7 @@ namespace Simulator {
 														  return Data{static_cast<A>(value >> shamt)};
 													  }},
 													  rs1.data);
-		const TAG tag_result = std::visit(tag_visitor, sri_result);
+		const Tag tag_result = std::visit(tag_visitor, sri_result);
 
 		return {sri_result, tag_result};
 	}
