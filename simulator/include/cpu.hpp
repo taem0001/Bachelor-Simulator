@@ -2,7 +2,7 @@
 #define CPU_HPP
 
 #include "includes.hpp"
-#include "util.hpp"
+#include "tag.hpp"
 
 namespace Simulator {
 	struct Register {

@@ -1,11 +1,6 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
-	constexpr auto tag_visitor = overloaded{
-		[](int8_t) { return Tag::SB; },	 [](int16_t) { return Tag::SH; },  [](int32_t) { return Tag::SW; },
-		[](uint8_t) { return Tag::UB; }, [](uint16_t) { return Tag::UH; }, [](uint32_t) { return Tag::UW; },
-	};
-
 	CPU::CPU() : pc(0) { registers.fill({0, Tag::SW}); }
 
 	// Getters/Setters
@@ -50,27 +45,62 @@ namespace Simulator {
 	}
 
 	// r-type instruction functions
+	uint32_t _bitwise_add(uint32_t a, uint32_t b) {
+		while (b != 0) {
+			uint32_t carry = (a & b) << 1;
+			a = a ^ b;
+			b = carry;
+		}
+		return a;
+	}
+
 	Register _add_instruction(const Register &rs1, const Register &rs2) {
-		Tag rs1_tag = rs1.tag;
-		Tag rs2_tag = rs2.tag;
+		const Tag t1 = rs1.tag;
+		const Tag t2 = rs2.tag;
+
+		// Compute resulting tag
+		const uint8_t w1 = width_of(t1);
+		const uint8_t w2 = width_of(t2);
+		uint8_t res_w;
+		if (std::abs(w1 - w2) < 2) {
+			res_w = promote_width((w1 < w2) ? w1 : w2);
+		} else {
+			res_w = promote_width((w1 < w2) ? w2 : w1);
+		}
+
+		const bool s1 = !is_unsigned(t1);
+		const bool s2 = !is_unsigned(t2);
+
+		bool res_signed = false;
+		if (s1 && s2) {
+			res_signed = true;
+		} else if (!s1 && !s2) {
+			res_signed = false;
+		} else {
+			const uint8_t unsigned_w = s1 ? w2 : w1;
+
+			switch (unsigned_w) {
+			case TAG_BYTE:
+			case TAG_HALF:
+				res_signed = res_w > unsigned_w;
+                break;
+			case TAG_WORD:
+				res_signed = false;
+                break;
+			default:
+				break;
+			}
+		}
+
+		const Tag res_tag = make_tag(res_signed, res_w);
+
+		// Compute addition
+		uint32_t res_data = _bitwise_add(rs1.data, rs2.data);
+
+		return {res_data, res_tag};
 	}
 
-	Register _sub_instruction(const Register &rs1, const Register &rs2) {
-		const auto sub_visitor = overloaded{
-			[](auto a, auto b)
-				requires(std::is_integral_v<std::decay_t<decltype(a)>> && std::is_integral_v<std::decay_t<decltype(b)>>)
-			{
-				using A = std::decay_t<decltype(a)>;
-				using B = std::decay_t<decltype(b)>;
-				using R = std::common_type_t<A, B>;
-				return Data{static_cast<R>(a) - static_cast<R>(b)};
-			}};
-
-		const Data sub_result = std::visit(sub_visitor, rs1.data, rs2.data);
-		const Tag tag_result = std::visit(tag_visitor, sub_result);
-
-		return {sub_result, tag_result};
-	}
+	Register _sub_instruction(const Register &rs1, const Register &rs2) {}
 
 	Register _shift_instruction(const Register &rs1, const Register &rs2) { return {0, Tag::SW}; }
 
@@ -97,37 +127,9 @@ namespace Simulator {
 	}
 
 	// i-type instruction functions
-	Register _sli_instruction(const Register &rs1, const int8_t imm) {
-		const Data sli_result = std::visit(overloaded{[&](auto value)
-														  requires(std::is_integral_v<std::decay_t<decltype(value)>>)
-													  {
-														  using A = std::decay_t<decltype(value)>;
-														  const uint8_t shamt = static_cast<uint8_t>(imm);
+	Register _sli_instruction(const Register &rs1, const int8_t imm) {}
 
-														  using UA = std::make_unsigned_t<A>;
-														  const UA v = static_cast<UA>(value);
-														  return Data{static_cast<A>(v << shamt)};
-													  }},
-													  rs1.data);
-		const Tag tag_result = std::visit(tag_visitor, sli_result);
-
-		return {sli_result, tag_result};
-	}
-
-	Register _sri_instruction(const Register &rs1, const int8_t imm) {
-		const Data sri_result = std::visit(overloaded{[&](auto value)
-														  requires(std::is_integral_v<std::decay_t<decltype(value)>>)
-													  {
-														  using A = std::decay_t<decltype(value)>;
-														  const uint8_t shamt = static_cast<uint8_t>(imm);
-
-														  return Data{static_cast<A>(value >> shamt)};
-													  }},
-													  rs1.data);
-		const Tag tag_result = std::visit(tag_visitor, sri_result);
-
-		return {sri_result, tag_result};
-	}
+	Register _sri_instruction(const Register &rs1, const int8_t imm) {}
 
 	void CPU::i_instruction(const char rd, const char func3, const char rs1, const short imm) {
 		switch (func3) {
