@@ -45,20 +45,7 @@ namespace Simulator {
 	}
 
 	// r-type instruction functions
-	uint32_t _bitwise_add(uint32_t a, uint32_t b) {
-		while (b != 0) {
-			uint32_t carry = (a & b) << 1;
-			a = a ^ b;
-			b = carry;
-		}
-		return a;
-	}
-
-	Register _add_instruction(const Register &rs1, const Register &rs2) {
-		const Tag t1 = rs1.tag;
-		const Tag t2 = rs2.tag;
-
-		// Compute resulting tag
+	Tag _compute_arithmetic_tag(const Tag &t1, const Tag &t2) {
 		const uint8_t w1 = width_of(t1);
 		const uint8_t w2 = width_of(t2);
 		uint8_t res_w;
@@ -83,16 +70,34 @@ namespace Simulator {
 			case TAG_BYTE:
 			case TAG_HALF:
 				res_signed = res_w > unsigned_w;
-                break;
+				break;
 			case TAG_WORD:
 				res_signed = false;
-                break;
+				break;
 			default:
+				res_signed = false;
 				break;
 			}
 		}
 
-		const Tag res_tag = make_tag(res_signed, res_w);
+		return make_tag(res_signed, res_w);
+	}
+
+	uint32_t _bitwise_add(uint32_t a, uint32_t b) {
+		while (b != 0) {
+			uint32_t carry = (a & b) << 1;
+			a = a ^ b;
+			b = carry;
+		}
+		return a;
+	}
+
+	Register _add_instruction(const Register &rs1, const Register &rs2) {
+		const Tag t1 = rs1.tag;
+		const Tag t2 = rs2.tag;
+
+		// Compute resulting tag
+		const Tag res_tag = _compute_arithmetic_tag(t1, t2);
 
 		// Compute addition
 		uint32_t res_data = _bitwise_add(rs1.data, rs2.data);
@@ -100,7 +105,23 @@ namespace Simulator {
 		return {res_data, res_tag};
 	}
 
-	Register _sub_instruction(const Register &rs1, const Register &rs2) {}
+	uint32_t _bitwise_sub(uint32_t a, uint32_t b) {
+		uint32_t neg_b = _bitwise_add(~b, 1);
+		return _bitwise_add(a, neg_b);
+	}
+
+	Register _sub_instruction(const Register &rs1, const Register &rs2) {
+		const Tag t1 = rs1.tag;
+		const Tag t2 = rs2.tag;
+
+		// Compute resulting tag
+		const Tag res_tag = _compute_arithmetic_tag(t1, t2);
+
+		// Compute subtraction
+		uint32_t res_data = _bitwise_sub(rs1.data, rs2.data);
+
+		return {res_data, res_tag};
+	}
 
 	Register _shift_instruction(const Register &rs1, const Register &rs2) { return {0, Tag::SW}; }
 
