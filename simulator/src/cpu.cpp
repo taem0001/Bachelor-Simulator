@@ -21,7 +21,7 @@ namespace Simulator {
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
-		case 0x13: {
+		case 0x13: { // i-type
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
@@ -29,13 +29,14 @@ namespace Simulator {
 
 			i_instruction(rd, func3, rs1, imm);
 		} break;
-		case 0x33: {
+		case 0x33: { // r-type
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
 			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
+            const char func7 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
-			r_instruction(rd, func3, rs1, rs2);
+			r_instruction(rd, func3, rs1, rs2, func7);
 		} break;
 		default:
 			break;
@@ -46,41 +47,10 @@ namespace Simulator {
 
 	// r-type instruction functions
 	Tag _compute_arithmetic_tag(const Tag &t1, const Tag &t2) {
-		const uint8_t w1 = width_of(t1);
-		const uint8_t w2 = width_of(t2);
-		uint8_t res_w;
-		if (std::abs(w1 - w2) < 2) {
-			res_w = promote_width((w1 < w2) ? w1 : w2);
-		} else {
-			res_w = promote_width((w1 < w2) ? w2 : w1);
-		}
-
-		const bool s1 = !is_unsigned(t1);
-		const bool s2 = !is_unsigned(t2);
-
-		bool res_signed = false;
-		if (s1 && s2) {
-			res_signed = true;
-		} else if (!s1 && !s2) {
-			res_signed = false;
-		} else {
-			const uint8_t unsigned_w = s1 ? w2 : w1;
-
-			switch (unsigned_w) {
-			case TAG_BYTE:
-			case TAG_HALF:
-				res_signed = res_w > unsigned_w;
-				break;
-			case TAG_WORD:
-				res_signed = false;
-				break;
-			default:
-				res_signed = false;
-				break;
-			}
-		}
-
-		return make_tag(res_signed, res_w);
+        if (t1 == Tag::UW || t2 == Tag::UW) {
+            return Tag::UW;
+        }
+        return Tag::SW;
 	}
 
 	uint32_t _bitwise_add(uint32_t a, uint32_t b) {
@@ -123,15 +93,36 @@ namespace Simulator {
 		return {res_data, res_tag};
 	}
 
-	Register _shift_instruction(const Register &rs1, const Register &rs2) { return {0, Tag::SW}; }
+    Register _sl_instruction(const Register &rs1, const Register &rs2) {
+        const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
+        const uint32_t res_data = rs1.data << shamt;
 
-	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2) {
-		switch (func3) {
-		case 0x2: // SHIFT
-		{
-			Register result = _shift_instruction(registers[rs2], registers[rs2]);
-			write_to_register(rd, result);
+        return {res_data, rs1.tag};
+    }
+
+    Register _sr_instruction(const Register &rs1, const Register &rs2) {
+        const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
+        uint32_t res_data;
+
+        // Casting is needed to shift arithmetically right
+		switch (rs1.tag) {
+		case Tag::SB:
+		case Tag::SH:
+		case Tag::SW: {
+			int32_t temp_data = static_cast<int32_t>(rs1.data);
+			temp_data >>= shamt;
+			res_data = static_cast<uint32_t>(temp_data);
 		} break;
+		default:
+			res_data = rs1.data >> shamt;
+			break;
+		}
+
+		return {res_data, rs1.tag};
+    }
+
+	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
+		switch (func3) {
 		case 0x0: // ADD
 		{
 			Register result = _add_instruction(registers[rs1], registers[rs2]);
@@ -142,15 +133,50 @@ namespace Simulator {
 			Register result = _sub_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
+        case 0x5: // SL or SR
+        {
+            if (func7 == 0b0100000) { // SR
+                Register result = _sr_instruction(registers[rs1], registers[rs2]);
+                write_to_register(rd, result);
+            }
+            if (func7 == 0) { // SL
+                Register result = _sl_instruction(registers[rs1], registers[rs2]);
+                write_to_register(rd, result);
+            }
+        } break;
 		default:
 			break;
 		}
 	}
 
 	// i-type instruction functions
-	Register _sli_instruction(const Register &rs1, const int8_t imm) {}
+	Register _sli_instruction(const Register &rs1, const int8_t imm) {
+		const uint8_t shamt = static_cast<uint8_t>(imm) & 0x1F;
+		const uint32_t res_data = rs1.data << shamt;
 
-	Register _sri_instruction(const Register &rs1, const int8_t imm) {}
+		return {res_data, rs1.tag};
+	}
+
+	Register _sri_instruction(const Register &rs1, const int8_t imm) {
+		const uint8_t shamt = static_cast<uint8_t>(imm) & 0x1F;
+		uint32_t res_data;
+
+        // Casting is needed to arithemtically shift right
+		switch (rs1.tag) {
+		case Tag::SB:
+		case Tag::SH:
+		case Tag::SW: {
+			int32_t temp_data = static_cast<int32_t>(rs1.data);
+			temp_data >>= shamt;
+			res_data = static_cast<uint32_t>(temp_data);
+		} break;
+		default:
+			res_data = rs1.data >> shamt;
+			break;
+		}
+
+		return {res_data, rs1.tag};
+	}
 
 	void CPU::i_instruction(const char rd, const char func3, const char rs1, const short imm) {
 		switch (func3) {

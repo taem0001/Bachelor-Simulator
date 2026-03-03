@@ -16,7 +16,7 @@ namespace Test {
 
     inline void print_header() {
         std::cout << MAGENTA << std::left << std::setw(16) << "INSTRUCTION" << RESET << MAGENTA << std::setw(16)
-                  << "OPERATION" << RESET << MAGENTA << "RESULT" << RESET << std::endl;
+                  << "TEST CASE" << RESET << MAGENTA << "RESULT" << RESET << std::endl;
     }
 
     inline void print_result(Stats &s, const std::string &instr, const std::string &variant, bool ok) {

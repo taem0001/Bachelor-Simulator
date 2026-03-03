@@ -20,7 +20,7 @@ namespace Test::Unit {
 	bool SubTester::i8_i8_test() {
 		int8_t a = 45;
 		int8_t b = 32;
-		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::SB, 13, Simulator::Tag::SH);
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::SB, 13, Simulator::Tag::SW);
 	}
 	bool SubTester::i16_i16_test() {
 		int16_t a = 23065;
@@ -35,12 +35,12 @@ namespace Test::Unit {
 	bool SubTester::ui8_ui8_test() {
 		uint8_t a = 200;
 		uint8_t b = 55;
-		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::UB, 145, Simulator::Tag::UH);
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::UB, 145, Simulator::Tag::SW);
 	}
 	bool SubTester::ui16_ui16_test() {
 		uint16_t a = 60000;
 		uint16_t b = 1234;
-		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::UH, 58766, Simulator::Tag::UW);
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::UH, 58766, Simulator::Tag::SW);
 	}
 	bool SubTester::ui32_ui32_test() {
 		uint32_t a = 4000000000;
@@ -50,7 +50,7 @@ namespace Test::Unit {
 	bool SubTester::i8_i16_test() {
 		int8_t a = -12;
 		int16_t b = 3000;
-		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::SH, -3012, Simulator::Tag::SH);
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::SH, -3012, Simulator::Tag::SW);
 	}
 	bool SubTester::i8_i32_test() {
 		int8_t a = 100;
@@ -60,12 +60,12 @@ namespace Test::Unit {
 	bool SubTester::i8_ui8_test() {
 		int8_t a = -1;
 		uint8_t b = 200;
-		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::UB, -201, Simulator::Tag::SH);
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::UB, -201, Simulator::Tag::SW);
 	}
 	bool SubTester::i8_ui16_test() {
 		int8_t a = 10;
 		uint16_t b = 65000;
-		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::UH, -64990, Simulator::Tag::UH);
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::UH, -64990, Simulator::Tag::SW);
 	}
 	bool SubTester::i8_ui32_test() {
 		int8_t a = 1;
@@ -75,7 +75,7 @@ namespace Test::Unit {
 	bool SubTester::i16_i8_test() {
 		int16_t a = -1234;
 		int8_t b = 12;
-		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::SB, -1246, Simulator::Tag::SH);
+		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::SB, -1246, Simulator::Tag::SW);
 	}
 	bool SubTester::i16_i32_test() {
 		int16_t a = 12345;
@@ -85,7 +85,7 @@ namespace Test::Unit {
 	bool SubTester::i16_ui8_test() {
 		int16_t a = -10;
 		uint8_t b = 250;
-		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::UB, -260, Simulator::Tag::SH);
+		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::UB, -260, Simulator::Tag::SW);
 	}
 	bool SubTester::i16_ui16_test() {
 		int16_t a = -200;
@@ -125,12 +125,12 @@ namespace Test::Unit {
 	bool SubTester::ui8_i8_test() {
 		uint8_t a = 200;
 		int8_t b = -1;
-		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::SB, 201, Simulator::Tag::SH);
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::SB, 201, Simulator::Tag::SW);
 	}
 	bool SubTester::ui8_i16_test() {
 		uint8_t a = 250;
 		int16_t b = -1000;
-		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::SH, 1250, Simulator::Tag::SH);
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::SH, 1250, Simulator::Tag::SW);
 	}
 	bool SubTester::ui8_i32_test() {
 		uint8_t a = 10;
@@ -140,7 +140,7 @@ namespace Test::Unit {
 	bool SubTester::ui8_ui16_test() {
 		uint8_t a = 200;
 		uint16_t b = 100;
-		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::UH, 100, Simulator::Tag::UH);
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::UH, 100, Simulator::Tag::SW);
 	}
 	bool SubTester::ui8_ui32_test() {
 		uint8_t a = 1;
@@ -150,7 +150,7 @@ namespace Test::Unit {
 	bool SubTester::ui16_i8_test() {
 		uint16_t a = 65000;
 		int8_t b = 10;
-		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::SB, 64990, Simulator::Tag::UH);
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::SB, 64990, Simulator::Tag::SW);
 	}
 	bool SubTester::ui16_i16_test() {
 		uint16_t a = 60000;
@@ -165,7 +165,7 @@ namespace Test::Unit {
 	bool SubTester::ui16_ui8_test() {
 		uint16_t a = 1000;
 		uint8_t b = 200;
-		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::UB, 800, Simulator::Tag::UH);
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::UB, 800, Simulator::Tag::SW);
 	}
 	bool SubTester::ui16_ui32_test() {
 		uint16_t a = 65000;

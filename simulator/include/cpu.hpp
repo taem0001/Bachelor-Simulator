@@ -31,7 +31,7 @@ namespace Simulator {
 
 			void write_to_register(const char rd, const Register &r);
 
-			void r_instruction(const char rd, const char func3, const char rs1, const char rs2);
+			void r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7);
 			void i_instruction(const char rd, const char func3, const char rs1, const short imm);
 	};
 } // namespace Simulator

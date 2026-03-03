@@ -1,12 +1,12 @@
-#ifndef SUB_HPP
-#define SUB_HPP
+#ifndef SR_HPP
+#define SR_HPP
 
 #include "../../simulator/include/cpu.hpp"
 #include "../../simulator/include/includes.hpp"
 #include "../test_utils.hpp"
 
 namespace Test::Unit {
-	struct SubTester {
+	struct SrTester {
 			static bool i8_i8_test();
 			static bool i16_i16_test();
 			static bool i32_i32_test();
@@ -50,6 +50,6 @@ namespace Test::Unit {
 			static bool ui32_ui8_test();
 			static bool ui32_ui16_test();
 	};
-} // namespace Test::Unit
+}
 
 #endif
