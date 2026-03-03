@@ -1,4 +1,5 @@
 #include "unit/add.hpp"
+#include "unit/addi.hpp"
 #include "unit/sl.hpp"
 #include "unit/sli.hpp"
 #include "unit/sr.hpp"
@@ -8,7 +9,7 @@
 using TestFn = bool (*)();
 using namespace Test;
 
-// r-type instructions
+// Tests defined
 static constexpr std::array<TestFn, 36> add_tests = {
 	&Unit::AddTester::i8_i8_test,	 &Unit::AddTester::i16_i16_test,   &Unit::AddTester::i32_i32_test,
 	&Unit::AddTester::ui8_ui8_test,	 &Unit::AddTester::ui16_ui16_test, &Unit::AddTester::ui32_ui32_test,
@@ -135,7 +136,6 @@ static constexpr std::array<std::string, 36> sr_test_names = {
 	"ui16 >> ui32", "ui32 >> i8",  "ui32 >> i16", "ui32 >> i32", "ui32 >> ui8",	 "ui32 >> ui16",
 };
 
-// i-type instructions
 static constexpr std::array<TestFn, 6> sli_tests = {&Unit::SliTester::i8_test,	 &Unit::SliTester::i16_test,
 													&Unit::SliTester::i32_test,	 &Unit::SliTester::ui8_test,
 													&Unit::SliTester::ui16_test, &Unit::SliTester::ui32_test};
@@ -150,6 +150,14 @@ static constexpr std::array<TestFn, 6> sri_tests = {&Unit::SriTester::i8_test,	 
 static constexpr std::array<std::string, 6> sri_test_names = {"i8 >> imm",	"i16 >> imm",  "i32 >> imm",
 															  "ui8 >> imm", "ui16 >> imm", "ui32 >> imm"};
 
+static constexpr std::array<TestFn, 6> addi_tests = {&Unit::AddiTester::i8_test,   &Unit::AddiTester::i16_test,
+													 &Unit::AddiTester::i32_test,  &Unit::AddiTester::ui8_test,
+													 &Unit::AddiTester::ui16_test, &Unit::AddiTester::ui32_test};
+
+static constexpr std::array<std::string, 6> addi_test_names = {"i8 + imm",	"i16 + imm",  "i32 + imm",
+															   "ui8 + imm", "ui16 + imm", "ui32 + imm"};
+
+// Call tests
 void add_test(Stats &stats) {
 	int i = 0;
 	for (auto test : add_tests) {
@@ -178,19 +186,19 @@ void sl_test(Stats &stats) {
 }
 
 void sr_test(Stats &stats) {
-    int i = 0;
-    for (auto test: sr_tests) {
-        bool ok = test();
-        print_result(stats, "SR", sr_test_names[i], ok);
-        i++;
-    }
+	int i = 0;
+	for (auto test : sr_tests) {
+		bool ok = test();
+		print_result(stats, "SR", sr_test_names[i], ok);
+		i++;
+	}
 }
 
 void r_tests(Stats &stats) {
 	add_test(stats);
 	sub_test(stats);
 	sl_test(stats);
-    sr_test(stats);
+	sr_test(stats);
 }
 
 void sli_test(Stats &stats) {
@@ -211,9 +219,19 @@ void sri_test(Stats &stats) {
 	}
 }
 
+void addi_test(Stats &stats) {
+	int i = 0;
+	for (auto test : addi_tests) {
+		bool ok = test();
+		print_result(stats, "ADDI", addi_test_names[i], ok);
+		i++;
+	}
+}
+
 void i_tests(Stats &stats) {
 	sli_test(stats);
 	sri_test(stats);
+    addi_test(stats);
 }
 
 int main() {

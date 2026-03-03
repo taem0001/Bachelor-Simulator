@@ -34,7 +34,8 @@ namespace Simulator {
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
 			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
-            const char func7 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
+			const char func7 =
+				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
 			r_instruction(rd, func3, rs1, rs2, func7);
 		} break;
@@ -47,10 +48,10 @@ namespace Simulator {
 
 	// r-type instruction functions
 	Tag _compute_arithmetic_tag(const Tag &t1, const Tag &t2) {
-        if (t1 == Tag::UW || t2 == Tag::UW) {
-            return Tag::UW;
-        }
-        return Tag::SW;
+		if (t1 == Tag::UW || t2 == Tag::UW) {
+			return Tag::UW;
+		}
+		return Tag::SW;
 	}
 
 	uint32_t _bitwise_add(uint32_t a, uint32_t b) {
@@ -93,18 +94,18 @@ namespace Simulator {
 		return {res_data, res_tag};
 	}
 
-    Register _sl_instruction(const Register &rs1, const Register &rs2) {
-        const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
-        const uint32_t res_data = rs1.data << shamt;
+	Register _sl_instruction(const Register &rs1, const Register &rs2) {
+		const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
+		const uint32_t res_data = rs1.data << shamt;
 
-        return {res_data, rs1.tag};
-    }
+		return {res_data, rs1.tag};
+	}
 
-    Register _sr_instruction(const Register &rs1, const Register &rs2) {
-        const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
-        uint32_t res_data;
+	Register _sr_instruction(const Register &rs1, const Register &rs2) {
+		const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
+		uint32_t res_data;
 
-        // Casting is needed to shift arithmetically right
+		// Casting is needed to shift arithmetically right
 		switch (rs1.tag) {
 		case Tag::SB:
 		case Tag::SH:
@@ -119,7 +120,7 @@ namespace Simulator {
 		}
 
 		return {res_data, rs1.tag};
-    }
+	}
 
 	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
 		switch (func3) {
@@ -133,17 +134,17 @@ namespace Simulator {
 			Register result = _sub_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
-        case 0x5: // SL or SR
-        {
-            if (func7 == 0b0100000) { // SR
-                Register result = _sr_instruction(registers[rs1], registers[rs2]);
-                write_to_register(rd, result);
-            }
-            if (func7 == 0) { // SL
-                Register result = _sl_instruction(registers[rs1], registers[rs2]);
-                write_to_register(rd, result);
-            }
-        } break;
+		case 0x5: // SL or SR
+		{
+			if (func7 == 0b0100000) { // SR
+				Register result = _sr_instruction(registers[rs1], registers[rs2]);
+				write_to_register(rd, result);
+			}
+			if (func7 == 0) { // SL
+				Register result = _sl_instruction(registers[rs1], registers[rs2]);
+				write_to_register(rd, result);
+			}
+		} break;
 		default:
 			break;
 		}
@@ -161,7 +162,7 @@ namespace Simulator {
 		const uint8_t shamt = static_cast<uint8_t>(imm) & 0x1F;
 		uint32_t res_data;
 
-        // Casting is needed to arithemtically shift right
+		// Casting is needed to arithemtically shift right
 		switch (rs1.tag) {
 		case Tag::SB:
 		case Tag::SH:
@@ -178,6 +179,14 @@ namespace Simulator {
 		return {res_data, rs1.tag};
 	}
 
+	Register _addi_instruction(const Register &rs1, const int16_t imm) {
+		const uint32_t imm_cast = static_cast<uint32_t>(imm);
+		const uint32_t res_data = _bitwise_add(rs1.data, imm_cast);
+		const Tag res_tag = _compute_arithmetic_tag(rs1.tag, Tag::SH);
+
+		return {res_data, res_tag};
+	}
+
 	void CPU::i_instruction(const char rd, const char func3, const char rs1, const short imm) {
 		switch (func3) {
 		case 0x1: // SLI
@@ -190,6 +199,13 @@ namespace Simulator {
 		{
 			if (((imm >> 5) & 0x7F) != 0) break;
 			Register result = _sri_instruction(registers[rs1], imm & 0x1F);
+			write_to_register(rd, result);
+		} break;
+		case 0x0: // ADDI
+		{
+			int32_t imm12 = imm & 0xFFF;
+			if (imm12 & 0x800) imm12 |= ~0xFFF;
+			Register result = _addi_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
 		default:
