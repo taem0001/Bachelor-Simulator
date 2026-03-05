@@ -1,19 +1,14 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
-	constexpr auto tag_visitor = overloaded{
-		[](int8_t) { return TAG::SB; },	 [](int16_t) { return TAG::SH; },  [](int32_t) { return TAG::SW; },
-		[](uint8_t) { return TAG::UB; }, [](uint16_t) { return TAG::UH; }, [](uint32_t) { return TAG::UW; },
-	};
-
-	CPU::CPU() : pc(0) { registers.fill({0, TAG::SW}); }
+	CPU::CPU() : pc(0) { registers.fill({0, Tag::SW}); }
 
 	// Getters/Setters
 	std::array<Register, REGISTERNUM> &CPU::get_registers() { return registers; }
 
 	const std::array<Register, REGISTERNUM> &CPU::get_registers() const { return registers; }
 
-	void CPU::set_register(const char rd, const Data &data, const TAG &tag) { write_to_register(rd, {data, tag}); }
+	void CPU::set_register(const char rd, const uint32_t data, const Tag &tag) { write_to_register(rd, {data, tag}); }
 
 	void CPU::write_to_register(const char rd, const Register &r) {
 		if (rd != 0) {
@@ -26,7 +21,7 @@ namespace Simulator {
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
-		case 0x13: {
+		case 0x13: { // i-type
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
@@ -34,13 +29,22 @@ namespace Simulator {
 
 			i_instruction(rd, func3, rs1, imm);
 		} break;
-		case 0x33: {
+		case 0x33: { // r-type
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
 			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
+			const char func7 =
+				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
-			r_instruction(rd, func3, rs1, rs2);
+			r_instruction(rd, func3, rs1, rs2, func7);
+		} break;
+		case 0x7B: {
+			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			const char func7 =
+				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
+
+			si_instruction(rd, func7);
 		} break;
 		default:
 			break;
@@ -50,49 +54,83 @@ namespace Simulator {
 	}
 
 	// r-type instruction functions
+	Tag _compute_arithmetic_tag(const Tag &t1, const Tag &t2) {
+		if (t1 == Tag::UW || t2 == Tag::UW) {
+			return Tag::UW;
+		}
+		return Tag::SW;
+	}
+
+	uint32_t _bitwise_add(uint32_t a, uint32_t b) {
+		while (b != 0) {
+			uint32_t carry = (a & b) << 1;
+			a = a ^ b;
+			b = carry;
+		}
+		return a;
+	}
+
 	Register _add_instruction(const Register &rs1, const Register &rs2) {
-		const auto add_visitor = overloaded{
-			[](auto a, auto b)
-				requires(std::is_integral_v<std::decay_t<decltype(a)>> && std::is_integral_v<std::decay_t<decltype(b)>>)
-			{
-				using A = std::decay_t<decltype(a)>;
-				using B = std::decay_t<decltype(b)>;
-				using R = std::common_type_t<A, B>;
-				return Data{static_cast<R>(a) + static_cast<R>(b)};
-			}};
+		const Tag t1 = rs1.tag;
+		const Tag t2 = rs2.tag;
 
-		const Data add_result = std::visit(add_visitor, rs1.data, rs2.data);
-		const TAG tag_result = std::visit(tag_visitor, add_result);
+		// Compute resulting tag
+		const Tag res_tag = _compute_arithmetic_tag(t1, t2);
 
-		return {add_result, tag_result};
+		// Compute addition
+		uint32_t res_data = _bitwise_add(rs1.data, rs2.data);
+
+		return {res_data, res_tag};
+	}
+
+	uint32_t _bitwise_sub(uint32_t a, uint32_t b) {
+		uint32_t neg_b = _bitwise_add(~b, 1);
+		return _bitwise_add(a, neg_b);
 	}
 
 	Register _sub_instruction(const Register &rs1, const Register &rs2) {
-		const auto sub_visitor = overloaded{
-			[](auto a, auto b)
-				requires(std::is_integral_v<std::decay_t<decltype(a)>> && std::is_integral_v<std::decay_t<decltype(b)>>)
-			{
-				using A = std::decay_t<decltype(a)>;
-				using B = std::decay_t<decltype(b)>;
-				using R = std::common_type_t<A, B>;
-				return Data{static_cast<R>(a) - static_cast<R>(b)};
-			}};
+		const Tag t1 = rs1.tag;
+		const Tag t2 = rs2.tag;
 
-		const Data sub_result = std::visit(sub_visitor, rs1.data, rs2.data);
-		const TAG tag_result = std::visit(tag_visitor, sub_result);
+		// Compute resulting tag
+		const Tag res_tag = _compute_arithmetic_tag(t1, t2);
 
-		return {sub_result, tag_result};
+		// Compute subtraction
+		uint32_t res_data = _bitwise_sub(rs1.data, rs2.data);
+
+		return {res_data, res_tag};
 	}
 
-	Register _shift_instruction(const Register &rs1, const Register &rs2) { return {0, TAG::SW}; }
+	Register _sl_instruction(const Register &rs1, const Register &rs2) {
+		const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
+		const uint32_t res_data = rs1.data << shamt;
 
-	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2) {
-		switch (func3) {
-		case 0x2: // SHIFT
-		{
-			Register result = _shift_instruction(registers[rs2], registers[rs2]);
-			write_to_register(rd, result);
+		return {res_data, rs1.tag};
+	}
+
+	Register _sr_instruction(const Register &rs1, const Register &rs2) {
+		const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
+		uint32_t res_data;
+
+		// Casting is needed to shift arithmetically right
+		switch (rs1.tag) {
+		case Tag::SB:
+		case Tag::SH:
+		case Tag::SW: {
+			int32_t temp_data = static_cast<int32_t>(rs1.data);
+			temp_data >>= shamt;
+			res_data = static_cast<uint32_t>(temp_data);
 		} break;
+		default:
+			res_data = rs1.data >> shamt;
+			break;
+		}
+
+		return {res_data, rs1.tag};
+	}
+
+	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
+		switch (func3) {
 		case 0x0: // ADD
 		{
 			Register result = _add_instruction(registers[rs1], registers[rs2]);
@@ -103,6 +141,17 @@ namespace Simulator {
 			Register result = _sub_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
+		case 0x5: // SL or SR
+		{
+			if (func7 == 0b0100000) { // SR
+				Register result = _sr_instruction(registers[rs1], registers[rs2]);
+				write_to_register(rd, result);
+			}
+			if (func7 == 0) { // SL
+				Register result = _sl_instruction(registers[rs1], registers[rs2]);
+				write_to_register(rd, result);
+			}
+		} break;
 		default:
 			break;
 		}
@@ -110,35 +159,39 @@ namespace Simulator {
 
 	// i-type instruction functions
 	Register _sli_instruction(const Register &rs1, const int8_t imm) {
-		const Data sli_result = std::visit(overloaded{[&](auto value)
-														  requires(std::is_integral_v<std::decay_t<decltype(value)>>)
-													  {
-														  using A = std::decay_t<decltype(value)>;
-														  const uint8_t shamt = static_cast<uint8_t>(imm);
+		const uint8_t shamt = static_cast<uint8_t>(imm) & 0x1F;
+		const uint32_t res_data = rs1.data << shamt;
 
-														  using UA = std::make_unsigned_t<A>;
-														  const UA v = static_cast<UA>(value);
-														  return Data{static_cast<A>(v << shamt)};
-													  }},
-													  rs1.data);
-		const TAG tag_result = std::visit(tag_visitor, sli_result);
-
-		return {sli_result, tag_result};
+		return {res_data, rs1.tag};
 	}
 
 	Register _sri_instruction(const Register &rs1, const int8_t imm) {
-		const Data sri_result = std::visit(overloaded{[&](auto value)
-														  requires(std::is_integral_v<std::decay_t<decltype(value)>>)
-													  {
-														  using A = std::decay_t<decltype(value)>;
-														  const uint8_t shamt = static_cast<uint8_t>(imm);
+		const uint8_t shamt = static_cast<uint8_t>(imm) & 0x1F;
+		uint32_t res_data;
 
-														  return Data{static_cast<A>(value >> shamt)};
-													  }},
-													  rs1.data);
-		const TAG tag_result = std::visit(tag_visitor, sri_result);
+		// Casting is needed to arithemtically shift right
+		switch (rs1.tag) {
+		case Tag::SB:
+		case Tag::SH:
+		case Tag::SW: {
+			int32_t temp_data = static_cast<int32_t>(rs1.data);
+			temp_data >>= shamt;
+			res_data = static_cast<uint32_t>(temp_data);
+		} break;
+		default:
+			res_data = rs1.data >> shamt;
+			break;
+		}
 
-		return {sri_result, tag_result};
+		return {res_data, rs1.tag};
+	}
+
+	Register _addi_instruction(const Register &rs1, const int16_t imm) {
+		const uint32_t imm_cast = static_cast<uint32_t>(imm);
+		const uint32_t res_data = _bitwise_add(rs1.data, imm_cast);
+		const Tag res_tag = _compute_arithmetic_tag(rs1.tag, Tag::SH);
+
+		return {res_data, res_tag};
 	}
 
 	void CPU::i_instruction(const char rd, const char func3, const char rs1, const short imm) {
@@ -153,6 +206,58 @@ namespace Simulator {
 		{
 			if (((imm >> 5) & 0x7F) != 0) break;
 			Register result = _sri_instruction(registers[rs1], imm & 0x1F);
+			write_to_register(rd, result);
+		} break;
+		case 0x0: // ADDI
+		{
+			int32_t imm12 = imm & 0xFFF;
+			if (imm12 & 0x800) imm12 |= ~0xFFF;
+			Register result = _addi_instruction(registers[rs1], imm12);
+			write_to_register(rd, result);
+		} break;
+		default:
+			break;
+		}
+	}
+
+	// si-type instructions
+	Register _cast_to_another_tag(const Register &r, const Tag &tag) {
+		const uint32_t res_data = r.data;
+		const Tag res_tag = tag;
+
+		return {res_data, res_tag};
+	}
+
+	void CPU::si_instruction(const char rd, const char func7) {
+		switch (func7) {
+		case 0x0: // CTUB
+		{
+			Register result = _cast_to_another_tag(registers[rd], Tag::UB);
+			write_to_register(rd, result);
+		} break;
+		case 0x1: // CTUH
+		{
+			Register result = _cast_to_another_tag(registers[rd], Tag::UH);
+			write_to_register(rd, result);
+		} break;
+		case 0x2: // CTUW
+		{
+			Register result = _cast_to_another_tag(registers[rd], Tag::UW);
+			write_to_register(rd, result);
+		} break;
+		case 0x4: // CTSB
+		{
+			Register result = _cast_to_another_tag(registers[rd], Tag::SB);
+			write_to_register(rd, result);
+		} break;
+		case 0x5: // CTSH
+		{
+			Register result = _cast_to_another_tag(registers[rd], Tag::SH);
+			write_to_register(rd, result);
+		} break;
+		case 0x6: // CTSW
+		{
+			Register result = _cast_to_another_tag(registers[rd], Tag::SW);
 			write_to_register(rd, result);
 		} break;
 		default:

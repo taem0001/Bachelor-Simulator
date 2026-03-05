@@ -1,196 +1,200 @@
 #include "sub.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t SUB_X9_X4_X15 = 0b00000000111100100001010010110011;
+	static constexpr uint32_t SUB_X30_X17_X25 = 0b00000001100110001001111100110011;
 
-	template <typename A, typename B, typename ExpectedT>
-	static bool sub_test(A a, B b, Simulator::TAG tag_a, Simulator::TAG tag_b, ExpectedT expected_val,
-						 Simulator::TAG expected_tag) {
+	static bool sub_test(uint32_t a_val, uint32_t b_val, Simulator::Tag a_tag, Simulator::Tag b_tag,
+						 uint32_t expected_val, Simulator::Tag expected_tag) {
 		Simulator::CPU cpu;
-		cpu.set_register(4, a, tag_a);
-		cpu.set_register(15, b, tag_b);
-		cpu.execute_instruction(SUB_X9_X4_X15);
+		cpu.set_register(17, a_val, a_tag);
+		cpu.set_register(25, b_val, b_tag);
+		cpu.execute_instruction(SUB_X30_X17_X25);
 
 		const auto registers = cpu.get_registers();
 
-		const bool passed_data = std::holds_alternative<ExpectedT>(registers[9].data) &&
-								 std::get<ExpectedT>(registers[9].data) == expected_val;
-		const bool passed_tag = registers[9].tag == expected_tag;
+		const bool passed_data = registers[30].data == expected_val;
+		const bool passed_tag = registers[30].tag == expected_tag;
 		return passed_data && passed_tag;
 	}
 
 	bool SubTester::i8_i8_test() {
-		return sub_test<int8_t, int8_t, int>(55, 10, Simulator::TAG::SB, Simulator::TAG::SB, 45, Simulator::TAG::SW);
+		int8_t a = 45;
+		int8_t b = 32;
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::SB, 13, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i16_i16_test() {
-		return sub_test<int16_t, int16_t, int>(300, 340, Simulator::TAG::SH, Simulator::TAG::SH, -40,
-											   Simulator::TAG::SW);
+		int16_t a = 23065;
+		int16_t b = -1203;
+		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::SH, 24268, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i32_i32_test() {
-		return sub_test<int32_t, int32_t, int>(23590, 234222, Simulator::TAG::SW, Simulator::TAG::SW, -210632,
-											   Simulator::TAG::SW);
+		int32_t a = 1000000000;
+		int32_t b = -123456789;
+		return sub_test(a, b, Simulator::Tag::SW, Simulator::Tag::SW, 1123456789, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui8_ui8_test() {
-		return sub_test<uint8_t, uint8_t, int>(101, 45, Simulator::TAG::UB, Simulator::TAG::UB, 56, Simulator::TAG::SW);
+		uint8_t a = 200;
+		uint8_t b = 55;
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::UB, 145, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui16_ui16_test() {
-		return sub_test<uint16_t, uint16_t, int>(2401, 3455, Simulator::TAG::UH, Simulator::TAG::UH, -1054,
-												 Simulator::TAG::SW);
+		uint16_t a = 60000;
+		uint16_t b = 1234;
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::UH, 58766, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui32_ui32_test() {
-		return sub_test<uint32_t, uint32_t, unsigned int>(2334224u, 1043352u, Simulator::TAG::UW, Simulator::TAG::UW,
-														  1290872u, Simulator::TAG::UW);
+		uint32_t a = 4000000000;
+		uint32_t b = 123456789;
+		return sub_test(a, b, Simulator::Tag::UW, Simulator::Tag::UW, 3876543211u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::i8_i16_test() {
-		return sub_test<int8_t, int16_t, int>(55, 340, Simulator::TAG::SB, Simulator::TAG::SH, -285,
-											  Simulator::TAG::SW);
+		int8_t a = -12;
+		int16_t b = 3000;
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::SH, -3012, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i8_i32_test() {
-		return sub_test<int8_t, int32_t, int>(10, 234222, Simulator::TAG::SB, Simulator::TAG::SW, -234212,
-											  Simulator::TAG::SW);
+		int8_t a = 100;
+		int32_t b = -100000;
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::SW, 100100, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i8_ui8_test() {
-		return sub_test<int8_t, uint8_t, int>(55, 45, Simulator::TAG::SB, Simulator::TAG::UB, 10, Simulator::TAG::SW);
+		int8_t a = -1;
+		uint8_t b = 200;
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::UB, -201, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i8_ui16_test() {
-		return sub_test<int8_t, uint16_t, int>(55, 2401, Simulator::TAG::SB, Simulator::TAG::UH, -2346,
-											   Simulator::TAG::SW);
+		int8_t a = 10;
+		uint16_t b = 65000;
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::UH, -64990, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i8_ui32_test() {
-		return sub_test<int8_t, uint32_t, unsigned int>(10, 1043352u, Simulator::TAG::SB, Simulator::TAG::UW,
-														4293923954u, Simulator::TAG::UW);
+		int8_t a = 1;
+		uint32_t b = 3000000000;
+		return sub_test(a, b, Simulator::Tag::SB, Simulator::Tag::UW, 1294967297u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::i16_i8_test() {
-		return sub_test<int16_t, int8_t, int>(300, 10, Simulator::TAG::SH, Simulator::TAG::SB, 290, Simulator::TAG::SW);
+		int16_t a = -1234;
+		int8_t b = 12;
+		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::SB, -1246, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i16_i32_test() {
-		return sub_test<int16_t, int32_t, int>(340, 23590, Simulator::TAG::SH, Simulator::TAG::SW, -23250,
-											   Simulator::TAG::SW);
+		int16_t a = 12345;
+		int32_t b = 200000;
+		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::SW, -187655, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i16_ui8_test() {
-		return sub_test<int16_t, uint8_t, int>(300, 45, Simulator::TAG::SH, Simulator::TAG::UB, 255,
-											   Simulator::TAG::SW);
+		int16_t a = -10;
+		uint8_t b = 250;
+		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::UB, -260, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i16_ui16_test() {
-		return sub_test<int16_t, uint16_t, int>(300, 2401, Simulator::TAG::SH, Simulator::TAG::UH, -2101,
-												Simulator::TAG::SW);
+		int16_t a = -200;
+		uint16_t b = 65000;
+		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::UH, -65200, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i16_ui32_test() {
-		return sub_test<int16_t, uint32_t, unsigned int>(340, 1043352u, Simulator::TAG::SH, Simulator::TAG::UW,
-														 4293924284u, Simulator::TAG::UW);
+		int16_t a = 7;
+		uint32_t b = 4000000000;
+		return sub_test(a, b, Simulator::Tag::SH, Simulator::Tag::UW, 294967303u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::i32_i8_test() {
-		return sub_test<int32_t, int8_t, int>(23590, 10, Simulator::TAG::SW, Simulator::TAG::SB, 23580,
-											  Simulator::TAG::SW);
+		int32_t a = -100000;
+		int8_t b = 1;
+		return sub_test(a, b, Simulator::Tag::SW, Simulator::Tag::SB, -100001, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i32_i16_test() {
-		return sub_test<int32_t, int16_t, int>(234222, 340, Simulator::TAG::SW, Simulator::TAG::SH, 233882,
-											   Simulator::TAG::SW);
+		int32_t a = 500000;
+		int16_t b = -123;
+		return sub_test(a, b, Simulator::Tag::SW, Simulator::Tag::SH, 500123, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i32_ui8_test() {
-		return sub_test<int32_t, uint8_t, int>(23590, 45, Simulator::TAG::SW, Simulator::TAG::UB, 23545,
-											   Simulator::TAG::SW);
+		int32_t a = -5;
+		uint8_t b = 10;
+		return sub_test(a, b, Simulator::Tag::SW, Simulator::Tag::UB, -15, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i32_ui16_test() {
-		return sub_test<int32_t, uint16_t, int>(23590, 2401, Simulator::TAG::SW, Simulator::TAG::UH, 21189,
-												Simulator::TAG::SW);
+		int32_t a = -1000;
+		uint16_t b = 60000;
+		return sub_test(a, b, Simulator::Tag::SW, Simulator::Tag::UH, -61000, Simulator::Tag::SW);
 	}
-
 	bool SubTester::i32_ui32_test() {
-		return sub_test<int32_t, uint32_t, unsigned int>(23590, 1043352u, Simulator::TAG::SW, Simulator::TAG::UW,
-														 4293947534u, Simulator::TAG::UW);
+		int32_t a = -1;
+		uint32_t b = 4000000000;
+		return sub_test(a, b, Simulator::Tag::SW, Simulator::Tag::UW, 294967295u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::ui8_i8_test() {
-		return sub_test<uint8_t, int8_t, int>(101, 10, Simulator::TAG::UB, Simulator::TAG::SB, 91, Simulator::TAG::SW);
+		uint8_t a = 200;
+		int8_t b = -1;
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::SB, 201, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui8_i16_test() {
-		return sub_test<uint8_t, int16_t, int>(101, 300, Simulator::TAG::UB, Simulator::TAG::SH, -199,
-											   Simulator::TAG::SW);
+		uint8_t a = 250;
+		int16_t b = -1000;
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::SH, 1250, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui8_i32_test() {
-		return sub_test<uint8_t, int32_t, int>(45, 23590, Simulator::TAG::UB, Simulator::TAG::SW, -23545,
-											   Simulator::TAG::SW);
+		uint8_t a = 10;
+		int32_t b = -100000;
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::SW, 100010, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui8_ui16_test() {
-		return sub_test<uint8_t, uint16_t, int>(45, 2401, Simulator::TAG::UB, Simulator::TAG::UH, -2356,
-												Simulator::TAG::SW);
+		uint8_t a = 200;
+		uint16_t b = 100;
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::UH, 100, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui8_ui32_test() {
-		return sub_test<uint8_t, uint32_t, unsigned int>(45, 1043352u, Simulator::TAG::UB, Simulator::TAG::UW,
-														 4293923989u, Simulator::TAG::UW);
+		uint8_t a = 1;
+		uint32_t b = 3000000000;
+		return sub_test(a, b, Simulator::Tag::UB, Simulator::Tag::UW, 1294967297u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::ui16_i8_test() {
-		return sub_test<uint16_t, int8_t, int>(2401, 10, Simulator::TAG::UH, Simulator::TAG::SB, 2391,
-											   Simulator::TAG::SW);
+		uint16_t a = 65000;
+		int8_t b = 10;
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::SB, 64990, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui16_i16_test() {
-		return sub_test<uint16_t, int16_t, int>(3455, 300, Simulator::TAG::UH, Simulator::TAG::SH, 3155,
-												Simulator::TAG::SW);
+		uint16_t a = 60000;
+		int16_t b = -200;
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::SH, 60200, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui16_i32_test() {
-		return sub_test<uint16_t, int32_t, int>(2401, 23590, Simulator::TAG::UH, Simulator::TAG::SW, -21189,
-												Simulator::TAG::SW);
+		uint16_t a = 65000;
+		int32_t b = -1000;
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::SW, 66000, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui16_ui8_test() {
-		return sub_test<uint16_t, uint8_t, int>(2401, 45, Simulator::TAG::UH, Simulator::TAG::UB, 2356,
-												Simulator::TAG::SW);
+		uint16_t a = 1000;
+		uint8_t b = 200;
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::UB, 800, Simulator::Tag::SW);
 	}
-
 	bool SubTester::ui16_ui32_test() {
-		return sub_test<uint16_t, uint32_t, unsigned int>(3455, 1043352u, Simulator::TAG::UH, Simulator::TAG::UW,
-														  4293927399u, Simulator::TAG::UW);
+		uint16_t a = 65000;
+		uint32_t b = 3000000000;
+		return sub_test(a, b, Simulator::Tag::UH, Simulator::Tag::UW, 1295032296u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::ui32_i8_test() {
-		return sub_test<uint32_t, int8_t, unsigned int>(1043352u, 10, Simulator::TAG::UW, Simulator::TAG::SB, 1043342u,
-														Simulator::TAG::UW);
+		uint32_t a = 3000000000;
+		int8_t b = 1;
+		return sub_test(a, b, Simulator::Tag::UW, Simulator::Tag::SB, 2999999999u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::ui32_i16_test() {
-		return sub_test<uint32_t, int16_t, unsigned int>(1043352u, 340, Simulator::TAG::UW, Simulator::TAG::SH,
-														 1043012u, Simulator::TAG::UW);
+		uint32_t a = 3000000000;
+		int16_t b = 7;
+		return sub_test(a, b, Simulator::Tag::UW, Simulator::Tag::SH, 2999999993u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::ui32_i32_test() {
-		return sub_test<uint32_t, int32_t, unsigned int>(1043352u, 23590, Simulator::TAG::UW, Simulator::TAG::SW,
-														 1019762u, Simulator::TAG::UW);
+		uint32_t a = 3000000000;
+		int32_t b = -1;
+		return sub_test(a, b, Simulator::Tag::UW, Simulator::Tag::SW, 3000000001u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::ui32_ui8_test() {
-		return sub_test<uint32_t, uint8_t, unsigned int>(1043352u, 45, Simulator::TAG::UW, Simulator::TAG::UB, 1043307u,
-														 Simulator::TAG::UW);
+		uint32_t a = 3000000000;
+		uint8_t b = 2;
+		return sub_test(a, b, Simulator::Tag::UW, Simulator::Tag::UB, 2999999998u, Simulator::Tag::UW);
 	}
-
 	bool SubTester::ui32_ui16_test() {
-		return sub_test<uint32_t, uint16_t, unsigned int>(1043352u, 3455, Simulator::TAG::UW, Simulator::TAG::UH,
-														  1039897u, Simulator::TAG::UW);
+		uint32_t a = 3000000000;
+		uint16_t b = 60000;
+		return sub_test(a, b, Simulator::Tag::UW, Simulator::Tag::UH, 2999940000u, Simulator::Tag::UW);
 	}
 } // namespace Test::Unit

@@ -1,196 +1,200 @@
 #include "add.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t ADD_X7_X5_X6 = 0b00000000011000101000001110110011;
+    static constexpr uint32_t ADD_X7_X5_X6 = 0b00000000011000101000001110110011;
 
-	template <typename A, typename B, typename ExpectedT>
-	static bool add_test(A a, B b, Simulator::TAG tag_a, Simulator::TAG tag_b, ExpectedT expected_val,
-						 Simulator::TAG expected_tag) {
-		Simulator::CPU cpu;
-		cpu.set_register(5, a, tag_a);
-		cpu.set_register(6, b, tag_b);
-		cpu.execute_instruction(ADD_X7_X5_X6);
+    static bool add_test(uint32_t a_val, uint32_t b_val, Simulator::Tag a_tag, Simulator::Tag b_tag,
+                         uint32_t expected_val, Simulator::Tag expected_tag) {
+        Simulator::CPU cpu;
+        cpu.set_register(5, a_val, a_tag);
+        cpu.set_register(6, b_val, b_tag);
+        cpu.execute_instruction(ADD_X7_X5_X6);
 
-		const auto registers = cpu.get_registers();
+        const auto registers = cpu.get_registers();
 
-		const bool passed_data = std::holds_alternative<ExpectedT>(registers[7].data) &&
-								 std::get<ExpectedT>(registers[7].data) == expected_val;
-		const bool passed_tag = registers[7].tag == expected_tag;
-		return passed_data && passed_tag;
-	}
+        const bool passed_data = registers[7].data == expected_val;
+        const bool passed_tag = registers[7].tag == expected_tag;
+        return passed_data && passed_tag;
+    }
 
-	bool AddTester::i8_i8_test() {
-		return add_test<int8_t, int8_t, int>(55, 10, Simulator::TAG::SB, Simulator::TAG::SB, 65, Simulator::TAG::SW);
-	}
-
-	bool AddTester::i16_i16_test() {
-		return add_test<int16_t, int16_t, int>(300, 340, Simulator::TAG::SH, Simulator::TAG::SH, 640,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::i32_i32_test() {
-		return add_test<int32_t, int32_t, int>(23590, 234222, Simulator::TAG::SW, Simulator::TAG::SW, 257812,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui8_ui8_test() {
-		return add_test<uint8_t, uint8_t, int>(101, 45, Simulator::TAG::UB, Simulator::TAG::UB, 146,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui16_ui16_test() {
-		return add_test<uint16_t, uint16_t, int>(2401, 3455, Simulator::TAG::UH, Simulator::TAG::UH, 5856,
-												 Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui32_ui32_test() {
-		return add_test<uint32_t, uint32_t, unsigned int>(2334224u, 1043352u, Simulator::TAG::UW, Simulator::TAG::UW,
-														  3377576u, Simulator::TAG::UW);
-	}
-
-	bool AddTester::i8_i16_test() {
-		return add_test<int8_t, int16_t, int>(55, 340, Simulator::TAG::SB, Simulator::TAG::SH, 395, Simulator::TAG::SW);
-	}
-
-	bool AddTester::i8_i32_test() {
-		return add_test<int8_t, int32_t, int>(10, 234222, Simulator::TAG::SB, Simulator::TAG::SW, 234232,
-											  Simulator::TAG::SW);
-	}
-
-	bool AddTester::i8_ui8_test() {
-		return add_test<int8_t, uint8_t, int>(55, 45, Simulator::TAG::SB, Simulator::TAG::UB, 100, Simulator::TAG::SW);
-	}
-
-	bool AddTester::i8_ui16_test() {
-		return add_test<int8_t, uint16_t, int>(55, 2401, Simulator::TAG::SB, Simulator::TAG::UH, 2456,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::i8_ui32_test() {
-		return add_test<int8_t, uint32_t, unsigned int>(10, 1043352u, Simulator::TAG::SB, Simulator::TAG::UW, 1043362u,
-														Simulator::TAG::UW);
-	}
-
-	bool AddTester::i16_i8_test() {
-		return add_test<int16_t, int8_t, int>(300, 10, Simulator::TAG::SH, Simulator::TAG::SB, 310, Simulator::TAG::SW);
-	}
-
-	bool AddTester::i16_i32_test() {
-		return add_test<int16_t, int32_t, int>(340, 23590, Simulator::TAG::SH, Simulator::TAG::SW, 23930,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::i16_ui8_test() {
-		return add_test<int16_t, uint8_t, int>(300, 45, Simulator::TAG::SH, Simulator::TAG::UB, 345,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::i16_ui16_test() {
-		return add_test<int16_t, uint16_t, int>(300, 2401, Simulator::TAG::SH, Simulator::TAG::UH, 2701,
-												Simulator::TAG::SW);
-	}
-
-	bool AddTester::i16_ui32_test() {
-		return add_test<int16_t, uint32_t, unsigned int>(340, 1043352u, Simulator::TAG::SH, Simulator::TAG::UW,
-														 1043692u, Simulator::TAG::UW);
-	}
-
-	bool AddTester::i32_i8_test() {
-		return add_test<int32_t, int8_t, int>(23590, 10, Simulator::TAG::SW, Simulator::TAG::SB, 23600,
-											  Simulator::TAG::SW);
-	}
-
-	bool AddTester::i32_i16_test() {
-		return add_test<int32_t, int16_t, int>(234222, 340, Simulator::TAG::SW, Simulator::TAG::SH, 234562,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::i32_ui8_test() {
-		return add_test<int32_t, uint8_t, int>(23590, 45, Simulator::TAG::SW, Simulator::TAG::UB, 23635,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::i32_ui16_test() {
-		return add_test<int32_t, uint16_t, int>(23590, 2401, Simulator::TAG::SW, Simulator::TAG::UH, 25991,
-												Simulator::TAG::SW);
-	}
-
-	bool AddTester::i32_ui32_test() {
-		return add_test<int32_t, uint32_t, unsigned int>(23590, 1043352u, Simulator::TAG::SW, Simulator::TAG::UW,
-														 1066942u, Simulator::TAG::UW);
-	}
-
-	bool AddTester::ui8_i8_test() {
-		return add_test<uint8_t, int8_t, int>(101, 10, Simulator::TAG::UB, Simulator::TAG::SB, 111, Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui8_i16_test() {
-		return add_test<uint8_t, int16_t, int>(101, 300, Simulator::TAG::UB, Simulator::TAG::SH, 401,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui8_i32_test() {
-		return add_test<uint8_t, int32_t, int>(45, 23590, Simulator::TAG::UB, Simulator::TAG::SW, 23635,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui8_ui16_test() {
-		return add_test<uint8_t, uint16_t, int>(45, 2401, Simulator::TAG::UB, Simulator::TAG::UH, 2446,
-												Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui8_ui32_test() {
-		return add_test<uint8_t, uint32_t, unsigned int>(45, 1043352u, Simulator::TAG::UB, Simulator::TAG::UW, 1043397u,
-														 Simulator::TAG::UW);
-	}
-
-	bool AddTester::ui16_i8_test() {
-		return add_test<uint16_t, int8_t, int>(2401, 10, Simulator::TAG::UH, Simulator::TAG::SB, 2411,
-											   Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui16_i16_test() {
-		return add_test<uint16_t, int16_t, int>(3455, 300, Simulator::TAG::UH, Simulator::TAG::SH, 3755,
-												Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui16_i32_test() {
-		return add_test<uint16_t, int32_t, int>(2401, 23590, Simulator::TAG::UH, Simulator::TAG::SW, 25991,
-												Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui16_ui8_test() {
-		return add_test<uint16_t, uint8_t, int>(2401, 45, Simulator::TAG::UH, Simulator::TAG::UB, 2446,
-												Simulator::TAG::SW);
-	}
-
-	bool AddTester::ui16_ui32_test() {
-		return add_test<uint16_t, uint32_t, unsigned int>(3455, 1043352u, Simulator::TAG::UH, Simulator::TAG::UW,
-														  1046807u, Simulator::TAG::UW);
-	}
-
-	bool AddTester::ui32_i8_test() {
-		return add_test<uint32_t, int8_t, unsigned int>(1043352u, 10, Simulator::TAG::UW, Simulator::TAG::SB, 1043362u,
-														Simulator::TAG::UW);
-	}
-
-	bool AddTester::ui32_i16_test() {
-		return add_test<uint32_t, int16_t, unsigned int>(1043352u, 340, Simulator::TAG::UW, Simulator::TAG::SH,
-														 1043692u, Simulator::TAG::UW);
-	}
-
-	bool AddTester::ui32_i32_test() {
-		return add_test<uint32_t, int32_t, unsigned int>(1043352u, 23590, Simulator::TAG::UW, Simulator::TAG::SW,
-														 1066942u, Simulator::TAG::UW);
-	}
-
-	bool AddTester::ui32_ui8_test() {
-		return add_test<uint32_t, uint8_t, unsigned int>(1043352u, 45, Simulator::TAG::UW, Simulator::TAG::UB, 1043397u,
-														 Simulator::TAG::UW);
-	}
-
-	bool AddTester::ui32_ui16_test() {
-		return add_test<uint32_t, uint16_t, unsigned int>(1043352u, 3455, Simulator::TAG::UW, Simulator::TAG::UH,
-														  1046807u, Simulator::TAG::UW);
-	}
+    bool AddTester::i8_i8_test() {
+        int8_t a = 32;
+        int8_t b = 45;
+        return add_test(a, b, Simulator::Tag::SB, Simulator::Tag::SB, 77, Simulator::Tag::SW);
+    }
+    bool AddTester::i16_i16_test() {
+        int16_t a = 23065;
+        int16_t b = -1203;
+        return add_test(a, b, Simulator::Tag::SH, Simulator::Tag::SH, 21862, Simulator::Tag::SW);
+    }
+    bool AddTester::i32_i32_test() {
+        int32_t a = 1000000000;
+        int32_t b = -123456789;
+        return add_test(a, b, Simulator::Tag::SW, Simulator::Tag::SW, 876543211, Simulator::Tag::SW);
+    }
+    bool AddTester::ui8_ui8_test() {
+        uint8_t a = 200;
+        uint8_t b = 55;
+        return add_test(a, b, Simulator::Tag::UB, Simulator::Tag::UB, 255, Simulator::Tag::SW);
+    }
+    bool AddTester::ui16_ui16_test() {
+        uint16_t a = 60000;
+        uint16_t b = 1234;
+        return add_test(a, b, Simulator::Tag::UH, Simulator::Tag::UH, 61234, Simulator::Tag::SW);
+    }
+    bool AddTester::ui32_ui32_test() {
+        uint32_t a = 4000000000;
+        uint32_t b = 123456789;
+        return add_test(a, b, Simulator::Tag::UW, Simulator::Tag::UW, 4123456789, Simulator::Tag::UW);
+    }
+    bool AddTester::i8_i16_test() {
+        int8_t a = -12;
+        int16_t b = 3000;
+        return add_test(a, b, Simulator::Tag::SB, Simulator::Tag::SH, 2988, Simulator::Tag::SW);
+    }
+    bool AddTester::i8_i32_test() {
+        int8_t a = 100;
+        int32_t b = -100000;
+        return add_test(a, b, Simulator::Tag::SB, Simulator::Tag::SW, -99900, Simulator::Tag::SW);
+    }
+    bool AddTester::i8_ui8_test() {
+        int8_t a = -1;
+        uint8_t b = 200;
+        return add_test(a, b, Simulator::Tag::SB, Simulator::Tag::UB, 199, Simulator::Tag::SW);
+    }
+    bool AddTester::i8_ui16_test() {
+        int8_t a = 10;
+        uint16_t b = 65000;
+        return add_test(a, b, Simulator::Tag::SB, Simulator::Tag::UH, 65010, Simulator::Tag::SW);
+    }
+    bool AddTester::i8_ui32_test() {
+        int8_t a = 1;
+        uint32_t b = 3000000000;
+        return add_test(a, b, Simulator::Tag::SB, Simulator::Tag::UW, 3000000001, Simulator::Tag::UW);
+    }
+    bool AddTester::i16_i8_test() {
+        int16_t a = -1234;
+        int8_t b = 12;
+        return add_test(a, b, Simulator::Tag::SH, Simulator::Tag::SB, -1222, Simulator::Tag::SW);
+    }
+    bool AddTester::i16_i32_test() {
+        int16_t a = 12345;
+        int32_t b = 200000;
+        return add_test(a, b, Simulator::Tag::SH, Simulator::Tag::SW, 212345, Simulator::Tag::SW);
+    }
+    bool AddTester::i16_ui8_test() {
+        int16_t a = -10;
+        uint8_t b = 250;
+        return add_test(a, b, Simulator::Tag::SH, Simulator::Tag::UB, 240, Simulator::Tag::SW);
+    }
+    bool AddTester::i16_ui16_test() {
+        int16_t a = -200;
+        uint16_t b = 65000;
+        return add_test(a, b, Simulator::Tag::SH, Simulator::Tag::UH, 64800, Simulator::Tag::SW);
+    }
+    bool AddTester::i16_ui32_test() {
+        int16_t a = 7;
+        uint32_t b = 4000000000;
+        return add_test(a, b, Simulator::Tag::SH, Simulator::Tag::UW, 4000000007, Simulator::Tag::UW);
+    }
+    bool AddTester::i32_i8_test() {
+        int32_t a = -100000;
+        int8_t b = 1;
+        return add_test(a, b, Simulator::Tag::SW, Simulator::Tag::SB, -99999, Simulator::Tag::SW);
+    }
+    bool AddTester::i32_i16_test() {
+        int32_t a = 500000;
+        int16_t b = -123;
+        return add_test(a, b, Simulator::Tag::SW, Simulator::Tag::SH, 499877, Simulator::Tag::SW);
+    }
+    bool AddTester::i32_ui8_test() {
+        int32_t a = -5;
+        uint8_t b = 10;
+        return add_test(a, b, Simulator::Tag::SW, Simulator::Tag::UB, 5, Simulator::Tag::SW);
+    }
+    bool AddTester::i32_ui16_test() {
+        int32_t a = -1000;
+        uint16_t b = 60000;
+        return add_test(a, b, Simulator::Tag::SW, Simulator::Tag::UH, 59000, Simulator::Tag::SW);
+    }
+    bool AddTester::i32_ui32_test() {
+        int32_t a = -1;
+        uint32_t b = 4000000000;
+        return add_test(a, b, Simulator::Tag::SW, Simulator::Tag::UW, 3999999999, Simulator::Tag::UW);
+    }
+    bool AddTester::ui8_i8_test() {
+        uint8_t a = 200;
+        int8_t b = -1;
+        return add_test(a, b, Simulator::Tag::UB, Simulator::Tag::SB, 199, Simulator::Tag::SW);
+    }
+    bool AddTester::ui8_i16_test() {
+        uint8_t a = 250;
+        int16_t b = -1000;
+        return add_test(a, b, Simulator::Tag::UB, Simulator::Tag::SH, -750, Simulator::Tag::SW);
+    }
+    bool AddTester::ui8_i32_test() {
+        uint8_t a = 10;
+        int32_t b = -100000;
+        return add_test(a, b, Simulator::Tag::UB, Simulator::Tag::SW, -99990, Simulator::Tag::SW);
+    }
+    bool AddTester::ui8_ui16_test() {
+        uint8_t a = 200;
+        uint16_t b = 1000;
+        return add_test(a, b, Simulator::Tag::UB, Simulator::Tag::UH, 1200, Simulator::Tag::SW);
+    }
+    bool AddTester::ui8_ui32_test() {
+        uint8_t a = 1;
+        uint32_t b = 3000000000;
+        return add_test(a, b, Simulator::Tag::UB, Simulator::Tag::UW, 3000000001, Simulator::Tag::UW);
+    }
+    bool AddTester::ui16_i8_test() {
+        uint16_t a = 65000;
+        int8_t b = 10;
+        return add_test(a, b, Simulator::Tag::UH, Simulator::Tag::SB, 65010, Simulator::Tag::SW);
+    }
+    bool AddTester::ui16_i16_test() {
+        uint16_t a = 60000;
+        int16_t b = -200;
+        return add_test(a, b, Simulator::Tag::UH, Simulator::Tag::SH, 59800, Simulator::Tag::SW);
+    }
+    bool AddTester::ui16_i32_test() {
+        uint16_t a = 65000;
+        int32_t b = -1000;
+        return add_test(a, b, Simulator::Tag::UH, Simulator::Tag::SW, 64000, Simulator::Tag::SW);
+    }
+    bool AddTester::ui16_ui8_test() {
+        uint16_t a = 1000;
+        uint8_t b = 200;
+        return add_test(a, b, Simulator::Tag::UH, Simulator::Tag::UB, 1200, Simulator::Tag::SW);
+    }
+    bool AddTester::ui16_ui32_test() {
+        uint16_t a = 65000;
+        uint32_t b = 3000000000;
+        return add_test(a, b, Simulator::Tag::UH, Simulator::Tag::UW, 3000065000, Simulator::Tag::UW);
+    }
+    bool AddTester::ui32_i8_test() {
+        uint32_t a = 3000000000;
+        int8_t b = 1;
+        return add_test(a, b, Simulator::Tag::UW, Simulator::Tag::SB, 3000000001, Simulator::Tag::UW);
+    }
+    bool AddTester::ui32_i16_test() {
+        uint32_t a = 3000000000;
+        int16_t b = 7;
+        return add_test(a, b, Simulator::Tag::UW, Simulator::Tag::SH, 3000000007, Simulator::Tag::UW);
+    }
+    bool AddTester::ui32_i32_test() {
+        uint32_t a = 3000000000;
+        int32_t b = -1;
+        return add_test(a, b, Simulator::Tag::UW, Simulator::Tag::SW, 2999999999, Simulator::Tag::UW);
+    }
+    bool AddTester::ui32_ui8_test() {
+        uint32_t a = 3000000000;
+        uint8_t b = 2;
+        return add_test(a, b, Simulator::Tag::UW, Simulator::Tag::UB, 3000000002, Simulator::Tag::UW);
+    }
+    bool AddTester::ui32_ui16_test() {
+        uint32_t a = 3000000000;
+        uint16_t b = 60000;
+        return add_test(a, b, Simulator::Tag::UW, Simulator::Tag::UH, 3000060000, Simulator::Tag::UW);
+    }
 } // namespace Test::Unit

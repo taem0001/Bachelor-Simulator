@@ -1,12 +1,12 @@
-#ifndef SLI_HPP
-#define SLI_HPP
+#ifndef ADDI_HPP
+#define ADDI_HPP
 
 #include "../../simulator/include/cpu.hpp"
 #include "../../simulator/include/includes.hpp"
 #include "../test_utils.hpp"
 
 namespace Test::Unit {
-	struct SliTester {
+	struct AddiTester {
 			static bool i8_test();
 			static bool i16_test();
 			static bool i32_test();

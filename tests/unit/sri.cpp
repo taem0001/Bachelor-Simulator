@@ -1,43 +1,42 @@
 #include "sri.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t SRI_X30_X3_6 = 0b00000000011000011101111100010011;
+    static constexpr uint32_t SRI_X15_X3_10 = 0b00000000101000011101011110010011;
 
-	template <typename A, typename ExpectedT>
-	static bool sri_test(A a, Simulator::TAG tag_a, ExpectedT expected_val, Simulator::TAG expected_tag) {
-		Simulator::CPU cpu;
-		cpu.set_register(3, a, tag_a);
-		cpu.execute_instruction(SRI_X30_X3_6);
+    static bool sri_test(uint32_t a_val, Simulator::Tag a_tag, uint32_t expected_val, Simulator::Tag expected_tag) {
+        Simulator::CPU cpu;
+        cpu.set_register(3, a_val, a_tag);
+        cpu.execute_instruction(SRI_X15_X3_10);
 
-		const auto registers = cpu.get_registers();
+        const auto registers = cpu.get_registers();
 
-		const bool passed_data = std::holds_alternative<ExpectedT>(registers[30].data) &&
-								 std::get<ExpectedT>(registers[30].data) == expected_val;
-		const bool passed_tag = registers[30].tag == expected_tag;
-		return passed_data && passed_tag;
-	}
-
-	bool SriTester::i8_test() {
-        return sri_test<int8_t, int8_t>(-128, Simulator::TAG::SB, -2, Simulator::TAG::SB);
+        const bool passed_data = registers[15].data == expected_val;
+        const bool passed_tag = registers[15].tag == expected_tag;
+        return passed_data && passed_tag;
     }
 
-	bool SriTester::i16_test() {
-        return sri_test<int16_t, int16_t>(28917, Simulator::TAG::SH, 451, Simulator::TAG::SH);
+    bool SriTester::i8_test() {
+        int8_t a = static_cast<int8_t>(0b11001001);
+        return sri_test(static_cast<uint32_t>(a), Simulator::Tag::SB, 0xFFFFFFFFu, Simulator::Tag::SB);
     }
-
+    bool SriTester::i16_test() {
+        int16_t a = static_cast<int16_t>(0b1101001110110010);
+        return sri_test(static_cast<uint32_t>(a), Simulator::Tag::SH, 0xFFFFFFF4u, Simulator::Tag::SH);
+    }
     bool SriTester::i32_test() {
-        return sri_test<int32_t, int32_t>(-233577552, Simulator::TAG::SW, -3649650, Simulator::TAG::SW);
+        int32_t a = static_cast<int32_t>(0xD3B2D3B2u);
+        return sri_test(static_cast<uint32_t>(a), Simulator::Tag::SW, 0xFFF4ECB4u, Simulator::Tag::SW);
     }
-
     bool SriTester::ui8_test() {
-        return sri_test<uint8_t, uint8_t>(192, Simulator::TAG::UB, 3, Simulator::TAG::UB);
+        uint8_t a = static_cast<uint8_t>(0b10001011);
+        return sri_test(static_cast<uint32_t>(a), Simulator::Tag::UB, 0x00000000u, Simulator::Tag::UB);
     }
-
     bool SriTester::ui16_test() {
-        return sri_test<uint16_t, uint16_t>(50947, Simulator::TAG::UH, 796, Simulator::TAG::UH);
+        uint16_t a = static_cast<uint16_t>(0b1100001010111010);
+        return sri_test(static_cast<uint32_t>(a), Simulator::Tag::UH, 0x00000030u, Simulator::Tag::UH);
     }
-
     bool SriTester::ui32_test() {
-        return sri_test<uint32_t, uint32_t>(4078699292, Simulator::TAG::UW, 63729676, Simulator::TAG::UW);
+        uint32_t a = 0xD3B2D3B2u;
+        return sri_test(a, Simulator::Tag::UW, 0x0034ECB4u, Simulator::Tag::UW);
     }
-} // namespace Test::Unit
+}
