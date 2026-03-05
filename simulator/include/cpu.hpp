@@ -33,6 +33,7 @@ namespace Simulator {
 
 			void r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7);
 			void i_instruction(const char rd, const char func3, const char rs1, const short imm);
+			void si_instruction(const char rd, const char func7);
 	};
 } // namespace Simulator
 
