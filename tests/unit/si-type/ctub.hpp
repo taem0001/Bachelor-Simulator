@@ -1,9 +1,9 @@
 #ifndef CTUB_HPP
 #define CTUB_HPP
 
-#include "../../simulator/include/cpu.hpp"
-#include "../../simulator/include/includes.hpp"
-#include "../test_utils.hpp"
+#include "../../../simulator/include/cpu.hpp"
+#include "../../../simulator/include/includes.hpp"
+#include "../../test_utils.hpp"
 
 namespace Test::Unit {
 	struct CtubTester {

@@ -1,12 +1,12 @@
-#ifndef SRI_HPP
-#define SRI_HPP
+#ifndef CTUW_HPP
+#define CTUW_HPP
 
-#include "../../simulator/include/cpu.hpp"
-#include "../../simulator/include/includes.hpp"
-#include "../test_utils.hpp"
+#include "../../../simulator/include/cpu.hpp"
+#include "../../../simulator/include/includes.hpp"
+#include "../../test_utils.hpp"
 
 namespace Test::Unit {
-	struct SriTester {
+	struct CtuwTester {
 			static bool i8_test();
 			static bool i16_test();
 			static bool i32_test();

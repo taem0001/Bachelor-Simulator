@@ -1,12 +1,12 @@
-#ifndef CTUH_HPP
-#define CTUH_HPP
+#ifndef SLI_HPP
+#define SLI_HPP
 
-#include "../../simulator/include/cpu.hpp"
-#include "../../simulator/include/includes.hpp"
-#include "../test_utils.hpp"
+#include "../../../simulator/include/cpu.hpp"
+#include "../../../simulator/include/includes.hpp"
+#include "../../test_utils.hpp"
 
 namespace Test::Unit {
-	struct CtuhTester {
+	struct SliTester {
 			static bool i8_test();
 			static bool i16_test();
 			static bool i32_test();

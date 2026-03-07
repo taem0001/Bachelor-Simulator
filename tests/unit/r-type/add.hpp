@@ -1,12 +1,12 @@
-#ifndef SL_HPP
-#define SL_HPP
+#ifndef ADD_HPP
+#define ADD_HPP
 
-#include "../../simulator/include/cpu.hpp"
-#include "../../simulator/include/includes.hpp"
-#include "../test_utils.hpp"
+#include "../../../simulator/include/cpu.hpp"
+#include "../../../simulator/include/includes.hpp"
+#include "../../test_utils.hpp"
 
 namespace Test::Unit {
-	struct SlTester {
+	struct AddTester {
 			static bool i8_i8_test();
 			static bool i16_i16_test();
 			static bool i32_i32_test();

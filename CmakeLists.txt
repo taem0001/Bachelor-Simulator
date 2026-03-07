@@ -33,6 +33,9 @@ enable_testing()
 
 file(GLOB TEST_UNIT_FILES CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/i-type/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/r-type/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/si-type/*.cpp
 )
 
 add_executable(simulator_tests
