@@ -8,25 +8,25 @@
 namespace Test {
 	using TestFn = bool (*)();
 
-	static constexpr std::array<TestFn, 6> sli_tests = {&Unit::SliTester::i8_test,	 &Unit::SliTester::i16_test,
+	static const std::array<TestFn, 6> sli_tests = {&Unit::SliTester::i8_test,	 &Unit::SliTester::i16_test,
 														&Unit::SliTester::i32_test,	 &Unit::SliTester::ui8_test,
 														&Unit::SliTester::ui16_test, &Unit::SliTester::ui32_test};
 
-	static constexpr std::array<std::string, 6> sli_test_names = {"i8 << imm",	"i16 << imm",  "i32 << imm",
+	static const std::array<std::string, 6> sli_test_names = {"i8 << imm",	"i16 << imm",  "i32 << imm",
 																  "ui8 << imm", "ui16 << imm", "ui32 << imm"};
 
-	static constexpr std::array<TestFn, 6> sri_tests = {&Unit::SriTester::i8_test,	 &Unit::SriTester::i16_test,
+	static const std::array<TestFn, 6> sri_tests = {&Unit::SriTester::i8_test,	 &Unit::SriTester::i16_test,
 														&Unit::SriTester::i32_test,	 &Unit::SriTester::ui8_test,
 														&Unit::SriTester::ui16_test, &Unit::SriTester::ui32_test};
 
-	static constexpr std::array<std::string, 6> sri_test_names = {"i8 >> imm",	"i16 >> imm",  "i32 >> imm",
+	static const std::array<std::string, 6> sri_test_names = {"i8 >> imm",	"i16 >> imm",  "i32 >> imm",
 																  "ui8 >> imm", "ui16 >> imm", "ui32 >> imm"};
 
-	static constexpr std::array<TestFn, 6> addi_tests = {&Unit::AddiTester::i8_test,   &Unit::AddiTester::i16_test,
+	static const std::array<TestFn, 6> addi_tests = {&Unit::AddiTester::i8_test,   &Unit::AddiTester::i16_test,
 														 &Unit::AddiTester::i32_test,  &Unit::AddiTester::ui8_test,
 														 &Unit::AddiTester::ui16_test, &Unit::AddiTester::ui32_test};
 
-	static constexpr std::array<std::string, 6> addi_test_names = {"i8 + imm",	"i16 + imm",  "i32 + imm",
+	static const std::array<std::string, 6> addi_test_names = {"i8 + imm",	"i16 + imm",  "i32 + imm",
 																   "ui8 + imm", "ui16 + imm", "ui32 + imm"};
 
 	void sli_test(Stats &stats) {
