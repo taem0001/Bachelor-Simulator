@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_library(simulator_lib
     simulator/src/cpu.cpp
     simulator/src/tag.cpp
+    simulator/src/file.cpp
 )
 
 target_include_directories(simulator_lib
