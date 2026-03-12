@@ -3,17 +3,9 @@
 
 #include "includes.hpp"
 #include "tag.hpp"
+#include "register.hpp"
 
 namespace Simulator {
-	struct Register {
-			uint32_t data;
-			Tag tag;
-
-			friend std::ostream &operator<<(std::ostream &out, const Register &r) noexcept {
-				return out << "(" << r.data << "; " << r.tag << ")";
-			}
-	};
-
 	class CPU {
 		public:
 			CPU();
