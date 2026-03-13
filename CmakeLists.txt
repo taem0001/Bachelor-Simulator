@@ -7,6 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_library(simulator_lib
     simulator/src/cpu.cpp
+    simulator/src/cpu_shared.cpp
+    simulator/src/cpu_itype.cpp
+    simulator/src/cpu_rtype.cpp
+    simulator/src/cpu_sitype.cpp
+    simulator/src/register.cpp
     simulator/src/tag.cpp
     simulator/src/file.cpp
 )

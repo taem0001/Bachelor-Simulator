@@ -6,6 +6,10 @@
 #include "register.hpp"
 
 namespace Simulator {
+	//Shared functions
+	uint32_t bitwise_add(uint32_t a, uint32_t b);
+
+
 	class CPU {
 		public:
 			CPU();

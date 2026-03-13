@@ -1,7 +1,7 @@
 #include "../include/cpu.hpp"
-#include "cpu_shared.cpp"
 
 namespace Simulator {
+
     // i-type instruction functions
 	Register _sli_instruction(const Register &rs1, const int8_t imm) {
 		const uint8_t shamt = static_cast<uint8_t>(imm) & 0x1F;
@@ -33,8 +33,8 @@ namespace Simulator {
 
 	Register _addi_instruction(const Register &rs1, const int32_t imm) {
 		const uint32_t imm_cast = static_cast<uint32_t>(imm);
-		const uint32_t res_data = _bitwise_add(rs1.data, imm_cast);
-		const Tag res_tag = _compute_arithmetic_tag(rs1.tag, Tag::SH);
+		const uint32_t res_data = bitwise_add(rs1.data, imm_cast);
+		const Tag res_tag = (rs1.tag == Tag::UW) ? Tag::UW : Tag::SW;
 
 		return {res_data, res_tag};
 	}

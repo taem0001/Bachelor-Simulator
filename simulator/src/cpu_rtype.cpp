@@ -1,5 +1,4 @@
 #include "../include/cpu.hpp"
-#include "cpu_shared.cpp"
 
 
 
@@ -11,17 +10,17 @@ namespace Simulator {
 		const Tag t2 = rs2.tag;
 
 		// Compute resulting tag
-		const Tag res_tag = _compute_arithmetic_tag(t1, t2);
+		const Tag res_tag = (t1 == Tag::UW || t2 == Tag::UW) ? Tag::UW : Tag::SW;
 
 		// Compute addition
-		uint32_t res_data = _bitwise_add(rs1.data, rs2.data);
+		uint32_t res_data = bitwise_add(rs1.data, rs2.data);
 
 		return {res_data, res_tag};
 	}
 
 	uint32_t _bitwise_sub(uint32_t a, uint32_t b) {
-		uint32_t neg_b = _bitwise_add(~b, 1);
-		return _bitwise_add(a, neg_b);
+		uint32_t neg_b = bitwise_add(~b, 1);
+		return bitwise_add(a, neg_b);
 	}
 
 	Register _sub_instruction(const Register &rs1, const Register &rs2) {
@@ -29,7 +28,7 @@ namespace Simulator {
 		const Tag t2 = rs2.tag;
 
 		// Compute resulting tag
-		const Tag res_tag = _compute_arithmetic_tag(t1, t2);
+		const Tag res_tag = (t1 == Tag::UW || t2 == Tag::UW) ? Tag::UW : Tag::SW;
 
 		// Compute subtraction
 		uint32_t res_data = _bitwise_sub(rs1.data, rs2.data);
