@@ -42,7 +42,10 @@ namespace Simulator {
 	Register _slti_instruction(const Register &rs1, const int32_t imm12) {
 		uint32_t res_data;
         if(is_unsigned(rs1.tag)) {
-            res_data = (rs1.data < imm12 ? 1 : 0);
+			res_data = imm12 < 0 ? 0 : 1;
+			if(res_data) {
+				res_data = (rs1.data < static_cast<uint32_t>(imm12) ? 1 : 0);
+			}
         } else {
             const int32_t rs1_cast = static_cast<int32_t>(rs1.data);
 			res_data = (rs1_cast < imm12 ? 1 : 0);
