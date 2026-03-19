@@ -21,11 +21,11 @@ namespace Test::Unit {
 
 	bool XoriTester::i8_test() {
 		int8_t a = -110;
-		return xori_test(a, Simulator::Tag::SB, 100, -10, Simulator::Tag::SB);
+		return xori_test(a, Simulator::Tag::SB, 100, -10, Simulator::Tag::SW);
 	}
 	bool XoriTester::i16_test() {
 		int16_t a = 5000;
-		return xori_test(a, Simulator::Tag::SH, -500, -4732, Simulator::Tag::SH);
+		return xori_test(a, Simulator::Tag::SH, -500, -4732, Simulator::Tag::SW);
 	}
 	bool XoriTester::i32_test() {
 		int32_t a = 100000;
@@ -33,11 +33,11 @@ namespace Test::Unit {
 	}
 	bool XoriTester::ui8_test() {
 		uint8_t a = 40;
-		return xori_test(a, Simulator::Tag::UB, 100, 76, Simulator::Tag::UB);
+		return xori_test(a, Simulator::Tag::UB, 100, 76, Simulator::Tag::SW);
 	}
 	bool XoriTester::ui16_test() {
 		uint16_t a = 40000;
-		return xori_test(a, Simulator::Tag::UH, -400, 25136, Simulator::Tag::UH);
+		return xori_test(a, Simulator::Tag::UH, -400, -40400, Simulator::Tag::SW);
 	}
 	bool XoriTester::ui32_test() {
 		uint32_t a = 25005433;

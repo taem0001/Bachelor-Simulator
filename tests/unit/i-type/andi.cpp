@@ -21,11 +21,11 @@ namespace Test::Unit {
 
 	bool AndiTester::i8_test() {
 		int8_t a = -110;
-		return andi_test(a, Simulator::Tag::SB, 100, 0, Simulator::Tag::SB);
+		return andi_test(a, Simulator::Tag::SB, 100, 0, Simulator::Tag::SW);
 	}
 	bool AndiTester::i16_test() {
 		int16_t a = 5000;
-		return andi_test(a, Simulator::Tag::SH, -500, 4616, Simulator::Tag::SH);
+		return andi_test(a, Simulator::Tag::SH, -500, 4616, Simulator::Tag::SW);
 	}
 	bool AndiTester::i32_test() {
 		int32_t a = 100000;
@@ -33,11 +33,11 @@ namespace Test::Unit {
 	}
 	bool AndiTester::ui8_test() {
 		uint8_t a = 40;
-		return andi_test(a, Simulator::Tag::UB, 100, 32, Simulator::Tag::UB);
+		return andi_test(a, Simulator::Tag::UB, 100, 32, Simulator::Tag::SW);
 	}
 	bool AndiTester::ui16_test() {
 		uint16_t a = 40000;
-		return andi_test(a, Simulator::Tag::UH, -400, 40000, Simulator::Tag::UH);
+		return andi_test(a, Simulator::Tag::UH, -400, 40000, Simulator::Tag::SW);
 	}
 	bool AndiTester::ui32_test() {
 		uint32_t a = 25005433;

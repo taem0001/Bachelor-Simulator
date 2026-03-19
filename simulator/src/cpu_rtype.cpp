@@ -69,13 +69,40 @@ namespace Simulator {
 		if(is_unsigned(rs1.tag) && is_unsigned(rs2.tag)) {
 			res_data = rs1.data < rs2.data ? 1 : 0;
 		} else if(!is_unsigned(rs1.tag) && is_unsigned(rs2.tag)) {
-			res_data = static_cast<int32_t> (rs1.data) < rs2.data ? 1 : 0;
+			res_data = static_cast<int32_t> (rs1.data) < 0 ? 1 : 0;
+			if(!res_data) {
+				res_data = static_cast<uint32_t> (rs1.data) < rs2.data ? 1 : 0;
+			}
 		} else if(is_unsigned(rs1.tag) && !is_unsigned(rs2.tag)) {
-			res_data = rs1.data < static_cast<int32_t> (rs2.data) ? 1 : 0;
+			res_data = static_cast<int32_t> (rs2.data) < 0 ? 0 : 1;
+			if(res_data) {
+				res_data = rs1.data < static_cast<uint32_t> (rs2.data) ? 1 : 0;
+			}
 		} else if(!is_unsigned(rs1.tag) && !is_unsigned(rs2.tag)) {
 			res_data = static_cast<int32_t> (rs1.data) < static_cast<int32_t> (rs2.data) ? 1 : 0;
 		}
 		return {res_data, Tag::UB};
+	}
+
+	Register _xor_instruction(Register &rs1, Register &rs2) {
+		const uint32_t res_data = (rs1.data ^ rs2.data);
+		Tag res_tag = (rs1.tag == Tag::UW || rs2.tag == Tag::UW) ? Tag::UW : Tag::SW;
+		Register result = {res_data, res_tag};
+		return result;
+	}
+
+	Register _or_instruction(Register &rs1, Register &rs2) {
+		const uint32_t res_data = (rs1.data | rs2.data);
+		Tag res_tag = (rs1.tag == Tag::UW || rs2.tag == Tag::UW) ? Tag::UW : Tag::SW;
+		Register result = {res_data, res_tag};
+		return result;
+	}
+
+	Register _and_instruction(Register &rs1, Register &rs2) {
+		const uint32_t res_data = (rs1.data & rs2.data);
+		Tag res_tag = (rs1.tag == Tag::UW || rs2.tag == Tag::UW) ? Tag::UW : Tag::SW;
+		Register result = {res_data, res_tag};
+		return result;
 	}
 
     void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
@@ -108,26 +135,17 @@ namespace Simulator {
 		} break;
 		case 0x4: // XOR
 		{
-			const uint32_t res_data = (registers[rs1].data ^ registers[rs2].data);
-			Tag largest_tag = width_of(registers[rs1].tag) < width_of(registers[rs2].tag) ? registers[rs1].tag : registers[rs2].tag; 
-			Register result = {res_data, largest_tag};
-			result.mask_by_tag();
+			Register result = _xor_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
 		case 0x6: // OR
 		{
-			const uint32_t res_data = (registers[rs1].data | registers[rs2].data);
-			Tag largest_tag = width_of(registers[rs1].tag) < width_of(registers[rs2].tag) ? registers[rs1].tag : registers[rs2].tag; 
-			Register result = {res_data, largest_tag};
-			result.mask_by_tag();
+			Register result = _or_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
 		case 0x7: // AND
 		{
-			const uint32_t res_data = (registers[rs1].data & registers[rs2].data);
-			Tag largest_tag = width_of(registers[rs1].tag) < width_of(registers[rs2].tag) ? registers[rs1].tag : registers[rs2].tag; 
-			Register result = {res_data, largest_tag};
-			result.mask_by_tag();
+			Register result = _and_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
 		default:

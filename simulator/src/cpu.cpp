@@ -10,6 +10,24 @@ namespace Simulator {
 
 	void CPU::set_register(const char rd, const uint32_t data, const Tag &tag) { write_to_register(rd, {data, tag}); }
 
+	void CPU::load_program(const std::string &path) {
+		Simulator::load_program(path, memory, 0);
+	}
+
+
+	void CPU::run() {
+		uint32_t instr = memory[pc]
+			| (memory[pc + 1] << 8)
+			| (memory[pc + 2] << 16)
+			| (memory[pc + 3] << 24);
+		
+		if(instr == 0) return;
+		
+		execute_instruction(instr);
+
+		pc += 4;
+	}
+
 	void CPU::write_to_register(const char rd, const Register &r) {
 		if (rd != 0) {
 			registers[rd] = r;
@@ -49,7 +67,5 @@ namespace Simulator {
 		default:
 			break;
 		};
-
-		pc += 4;
 	}
 } // namespace Simulator

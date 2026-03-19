@@ -53,6 +53,24 @@ namespace Simulator {
 		return {res_data, Tag::UB};
 	}
 
+	Register _xori_instruction(Register &rs1, uint32_t imm12) {
+		uint32_t res_data = (rs1.data ^ imm12);
+		Tag res_tag = rs1.tag == Tag::UW ? Tag::UW : Tag::SW;
+		return {res_data, res_tag};
+	}
+
+	Register _ori_instruction(Register &rs1, uint32_t imm12) {
+		uint32_t res_data = (rs1.data | imm12);
+		Tag res_tag = rs1.tag == Tag::UW ? Tag::UW : Tag::SW;
+		return {res_data, res_tag};
+	}
+
+	Register _andi_instruction(Register &rs1, uint32_t imm12) {
+		uint32_t res_data = (rs1.data & imm12);
+		Tag res_tag = rs1.tag == Tag::UW ? Tag::UW : Tag::SW;
+		return {res_data, res_tag};
+	}
+
 	void CPU::i_instruction(const char rd, const char func3, const char rs1, const short imm) {
 		int32_t imm12 = imm & 0xFFF;
 		if (imm12 & 0x800) imm12 |= ~0xFFF;
@@ -69,23 +87,17 @@ namespace Simulator {
 		} break;
 		case 0x4: //XORI
 		{
-			const uint32_t res_data = (registers[rs1].data ^ imm12);
-			Register result = {res_data, registers[rs1].tag};
-			result.mask_by_tag();
+			Register result = _xori_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
 		case 0x6: //ORI
 		{
-			const uint32_t res_data = (registers[rs1].data | imm12);
-			Register result = {res_data, registers[rs1].tag};
-			result.mask_by_tag();
+			Register result = _ori_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
 		case 0x7: //ANDI
 		{
-			const uint32_t res_data = (registers[rs1].data & imm12);
-			Register result = {res_data, registers[rs1].tag};
-			result.mask_by_tag();
+			Register result = _andi_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;	
 		case 0x1: // SLI

@@ -4,7 +4,9 @@
 #include "includes.hpp"
 
 namespace Simulator {
-    std::vector<uint8_t> get_program(const std::string &file_path);
+    void load_program(const std::string& file_path,
+                      std::array<uint8_t, MEMORY_SIZE_BYTES> &memory,
+                      std::size_t start_addr = 0);
 }
 
 #endif

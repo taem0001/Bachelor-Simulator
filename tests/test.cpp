@@ -7,8 +7,8 @@ using namespace Test;
 int main(int argc, char* argv[]) {
 	Stats stats;
 	print_header();
-
-	switch(argv[1][0]) {
+	const char arg1 = (argc <= 1) ? 'd' : argv[1][0];
+	switch(arg1) {
 		case 'r': 
 			r_tests(stats);
 			break;

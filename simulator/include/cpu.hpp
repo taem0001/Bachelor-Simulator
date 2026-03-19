@@ -4,6 +4,7 @@
 #include "includes.hpp"
 #include "tag.hpp"
 #include "register.hpp"
+#include "file.hpp"
 
 namespace Simulator {
 	//Shared functions
@@ -14,15 +15,19 @@ namespace Simulator {
 		public:
 			CPU();
 			void execute_instruction(const int instruction);
+			void run();
 
 			std::array<Register, REGISTERNUM> &get_registers();
 			const std::array<Register, REGISTERNUM> &get_registers() const;
+
+			void load_program(const std::string &path);
 
 			// TODO: THIS FUNCTION IS ONLY FOR TESTING PURPOSES; REMOVE LATER
 			void set_register(const char rd, const uint32_t data, const Tag &tag);
 
 		private:
 			std::array<Register, REGISTERNUM> registers;
+			std::array<uint8_t, MEMORY_SIZE_BYTES> memory{};
 			int pc;
 
 			void write_to_register(const char rd, const Register &r);

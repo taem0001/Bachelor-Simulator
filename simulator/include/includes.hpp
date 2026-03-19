@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+
 #define REGISTERNUM 32
 
 // Instruction specific
@@ -27,5 +28,8 @@
 #define TAG_WORD	 0x2
 #define TAG_UNSIGNED 0
 #define TAG_SIGNED	 1
+
+//Memory
+#define MEMORY_SIZE_BYTES 100
 
 #endif

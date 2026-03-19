@@ -21,11 +21,11 @@ namespace Test::Unit {
 
 	bool OriTester::i8_test() {
 		int8_t a = -110;
-		return ori_test(a, Simulator::Tag::SB, 100, -10, Simulator::Tag::SB);
+		return ori_test(a, Simulator::Tag::SB, 100, -10, Simulator::Tag::SW);
 	}
 	bool OriTester::i16_test() {
 		int16_t a = 5000;
-		return ori_test(a, Simulator::Tag::SH, -500, -116, Simulator::Tag::SH);
+		return ori_test(a, Simulator::Tag::SH, -500, -116, Simulator::Tag::SW);
 	}
 	bool OriTester::i32_test() {
 		int32_t a = 100000;
@@ -33,11 +33,11 @@ namespace Test::Unit {
 	}
 	bool OriTester::ui8_test() {
 		uint8_t a = 40;
-		return ori_test(a, Simulator::Tag::UB, 100, 108, Simulator::Tag::UB);
+		return ori_test(a, Simulator::Tag::UB, 100, 108, Simulator::Tag::SW);
 	}
 	bool OriTester::ui16_test() {
 		uint16_t a = 40000;
-		return ori_test(a, Simulator::Tag::UH, -400, 65136, Simulator::Tag::UH);
+		return ori_test(a, Simulator::Tag::UH, -400, -400, Simulator::Tag::SW);
 	}
 	bool OriTester::ui32_test() {
 		uint32_t a = 25005433;
