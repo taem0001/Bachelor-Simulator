@@ -50,6 +50,14 @@ namespace Simulator {
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
+		case 0x03: { // l-type
+			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
+			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
+			const short imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN));
+
+			l_instruction(rd, func3, rs1, imm);
+		} break;
 		case 0x13: { // i-type
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
@@ -63,11 +71,19 @@ namespace Simulator {
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
 			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
-			const char func7 =
-				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
+			const char func7 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
 			r_instruction(rd, func3, rs1, rs2, func7);
 		} break;
+		case 0x23: { // s-type
+			const char imm4_0 = (instruction >> OPCODE_LEN) & 0x1F;
+			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
+			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
+			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
+			const char imm11_5 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
+
+			
+		}
 		case 0x7B: {
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func7 =
