@@ -11,6 +11,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <bitset>
 
 
 #define REGISTERNUM 32

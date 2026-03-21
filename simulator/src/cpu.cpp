@@ -14,18 +14,27 @@ namespace Simulator {
 		Simulator::load_program(path, memory, 0);
 	}
 
+	void CPU::print_registers() {
+		for (const Register& reg : get_registers()) {
+			std::cout << reg << '\n';
+		}
+	}
 
 	void CPU::run() {
-		uint32_t instr = memory[pc]
-			| (memory[pc + 1] << 8)
-			| (memory[pc + 2] << 16)
-			| (memory[pc + 3] << 24);
-		
-		if(instr == 0) return;
-		
-		execute_instruction(instr);
+		while(pc+3 < MEMORY_SIZE_BYTES) {
+			uint32_t instr = memory[pc]
+				| (memory[pc + 1] << 8)
+				| (memory[pc + 2] << 16)
+				| (memory[pc + 3] << 24);
+			
+			if(instr == 0) {
+				print_registers();
+				return;
+			}
+			execute_instruction(instr);
 
-		pc += 4;
+			pc += 4;
+		}
 	}
 
 	void CPU::write_to_register(const char rd, const Register &r) {
@@ -36,6 +45,8 @@ namespace Simulator {
 
 	// Instruction functions
 	void CPU::execute_instruction(const int instruction) {
+		std::cout << std::bitset<32>(instruction) << '\n';
+
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
