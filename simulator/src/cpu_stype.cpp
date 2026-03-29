@@ -6,12 +6,19 @@ namespace Simulator {
         int32_t imm = (static_cast<int32_t>(imm11_5 & 0x7F) << 5)
                 |  static_cast<int32_t>(imm4_0 & 0x1F);
 
-        // sign-extend 12-bit immediate
+        uint32_t addr;
+        // sign-extend 12-bit immediate and add based on immediate value
         if (imm & 0x800) {
             imm |= ~0xFFF;
+            if(imm * (-1) > registers[rs1].data) {
+                return;
+            } else {
+               addr = (registers[rs1].data) - static_cast<uint32_t> (static_cast<uint32_t> (imm) * -1);
+            }
+        } else {
+            addr = (registers[rs1].data) + imm;
         }
-
-        uint32_t addr = registers[rs1].data + imm;
+        if(addr > MEMORY_SIZE_BYTES) return;
         uint32_t value = registers[rs2].data;
         Tag tag = registers[rs2].tag;
 

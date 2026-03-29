@@ -19,11 +19,13 @@ namespace Simulator {
 
 			std::array<Register, REGISTERNUM> &get_registers();
 			const std::array<Register, REGISTERNUM> &get_registers() const;
+			const std::array<uint8_t, MEMORY_SIZE_BYTES> &get_memory() const;
 
 			void load_program(const std::string &path);
 
-			// TODO: THIS FUNCTION IS ONLY FOR TESTING PURPOSES; REMOVE LATER
+			// TODO: THESE FUNCTIONS ARE ONLY FOR TESTING PURPOSES; REMOVE LATER
 			void set_register(const char rd, const uint32_t data, const Tag &tag);
+			void set_memory(uint32_t addr, uint32_t data, Tag tag);
 
 		private:
 			std::array<Register, REGISTERNUM> registers;

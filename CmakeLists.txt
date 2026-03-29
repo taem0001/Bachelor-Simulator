@@ -11,6 +11,8 @@ add_library(simulator_lib
     simulator/src/cpu_itype.cpp
     simulator/src/cpu_rtype.cpp
     simulator/src/cpu_sitype.cpp
+    simulator/src/cpu_ltype.cpp
+    simulator/src/cpu_stype.cpp
     simulator/src/register.cpp
     simulator/src/tag.cpp
     simulator/src/file.cpp
@@ -42,6 +44,8 @@ file(GLOB TEST_UNIT_FILES CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/i-type/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/r-type/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/si-type/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/l-type/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/s-type/*.cpp
 )
 
 add_executable(simulator_tests
