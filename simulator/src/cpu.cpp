@@ -1,7 +1,11 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
-	CPU::CPU() : pc(0) { registers.fill({0, Tag::SW}); }
+	CPU::CPU() : pc(0) {
+		registers.fill({0, Tag::SW});
+		// Initialize stack pointer (x2) to top of simulated memory.
+		registers[2] = {MEMORY_SIZE_BYTES, Tag::UW};
+	}
 
 	// Getters/Setters
 	std::array<Register, REGISTERNUM> &CPU::get_registers() { return registers; }
@@ -103,7 +107,7 @@ namespace Simulator {
 			const char imm11_5 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
 			s_instruction(imm4_0, func3, rs1, rs2, imm11_5);
-		}
+		} break;
 		case 0x7B: {
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func7 =
