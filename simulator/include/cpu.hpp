@@ -32,6 +32,7 @@ namespace Simulator {
 		private:
 			std::array<Register, REGISTERNUM> registers;
 			std::array<uint8_t, MEMORY_SIZE_BYTES> memory{};
+			std::size_t program_size_bytes;
 			int pc;
 			bool pc_modified;
 

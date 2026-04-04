@@ -1,7 +1,7 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
-	CPU::CPU() : pc(0), pc_modified(false) {
+	CPU::CPU() : program_size_bytes(0), pc(0), pc_modified(false) {
 		registers.fill({0, Tag::SW});
 		// Initialize stack pointer (x2) to top of simulated memory.
 		registers[2] = {MEMORY_SIZE_BYTES, Tag::UW};
@@ -33,7 +33,17 @@ namespace Simulator {
 		}
 	}
 
-	void CPU::load_program(const std::string &path) { Simulator::load_program(path, memory, 0); }
+	void CPU::load_program(const std::string &path) {
+		std::ifstream in_file(path, std::ios::binary | std::ios::ate);
+		if (in_file) {
+			program_size_bytes = static_cast<std::size_t>(in_file.tellg());
+		} else {
+			program_size_bytes = 0;
+		}
+
+		pc = 0;
+		Simulator::load_program(path, memory, 0);
+	}
 
 	void CPU::print_registers() {
 		int i = 0;
@@ -45,18 +55,17 @@ namespace Simulator {
 	void CPU::run() {
 		constexpr uint32_t INSTR_SIZE_BYTES = 4;
 
-		while (pc + (INSTR_SIZE_BYTES - 1) < MEMORY_SIZE_BYTES) {
+		while (pc >= 0 && (static_cast<std::size_t>(pc) + (INSTR_SIZE_BYTES - 1) < program_size_bytes)) {
+			std::cout << std::hex << pc << std::endl;
 			const uint32_t instr = static_cast<uint32_t>(memory[pc]) | (static_cast<uint32_t>(memory[pc + 1]) << 8) |
 								   (static_cast<uint32_t>(memory[pc + 2]) << 16) |
 								   (static_cast<uint32_t>(memory[pc + 3]) << 24);
-            pc_modified = false;
-			if (instr == 0) {
-				print_registers();
-				return;
-			}
+			pc_modified = false;
 			execute_instruction(instr);
 			if (!pc_modified) pc += INSTR_SIZE_BYTES;
 		}
+
+		print_registers();
 	}
 
 	void CPU::write_to_register(const char rd, const Register &r) {
