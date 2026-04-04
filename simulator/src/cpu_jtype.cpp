@@ -7,6 +7,7 @@ namespace Simulator {
 
         int val = pc + 4;
         pc += imm;
+        pc_modified = true;
 
         Register res = {.data = static_cast<uint32_t>(val), .tag = registers[rd].tag};
         write_to_register(rd, res);

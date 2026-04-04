@@ -1,15 +1,14 @@
 #ifndef CPU_HPP
 #define CPU_HPP
 
-#include "includes.hpp"
-#include "tag.hpp"
-#include "register.hpp"
 #include "file.hpp"
+#include "includes.hpp"
+#include "register.hpp"
+#include "tag.hpp"
 
 namespace Simulator {
-	//Shared functions
+	// Shared functions
 	uint32_t bitwise_add(uint32_t a, uint32_t b);
-
 
 	class CPU {
 		public:
@@ -27,10 +26,14 @@ namespace Simulator {
 			void set_register(const char rd, const uint32_t data, const Tag &tag);
 			void set_memory(uint32_t addr, uint32_t data, Tag tag);
 
+			int get_pc() { return pc; }
+			bool get_pc_modified() { return pc_modified; }
+
 		private:
 			std::array<Register, REGISTERNUM> registers;
 			std::array<uint8_t, MEMORY_SIZE_BYTES> memory{};
 			int pc;
+			bool pc_modified;
 
 			void write_to_register(const char rd, const Register &r);
 			void print_registers();
@@ -40,7 +43,8 @@ namespace Simulator {
 			void si_instruction(const char rd, const char func7);
 			void l_instruction(const char rd, const char func3, const char rs1, const short imm);
 			void s_instruction(const char imm4_0, const char func3, const char rs1, const char rs2, const char imm11_5);
-			void b_instruction(const char imm4_1_11, const char func3, const char rs1, const char rs2, const char imm12_10_5);
+			void b_instruction(const char imm4_1_11, const char func3, const char rs1, const char rs2,
+							   const char imm12_10_5);
 			void j_instruction(const char rd, const int imm);
 			void jalr_instruction(const char rd, const char func3, const char rs1, const short imm);
 	};

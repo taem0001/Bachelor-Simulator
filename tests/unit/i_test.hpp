@@ -2,64 +2,64 @@
 #define I_TEST_HPP
 
 #include "i-type/addi.hpp"
-#include "i-type/sli.hpp"
-#include "i-type/sri.hpp"
-#include "i-type/slti.hpp"
-#include "i-type/xori.hpp"
-#include "i-type/ori.hpp"
 #include "i-type/andi.hpp"
+#include "i-type/ori.hpp"
+#include "i-type/sli.hpp"
+#include "i-type/slti.hpp"
+#include "i-type/sri.hpp"
+#include "i-type/xori.hpp"
 
 namespace Test {
 	using TestFn = bool (*)();
 
 	static const std::array<TestFn, 6> sli_tests = {&Unit::SliTester::i8_test,	 &Unit::SliTester::i16_test,
-														&Unit::SliTester::i32_test,	 &Unit::SliTester::ui8_test,
-														&Unit::SliTester::ui16_test, &Unit::SliTester::ui32_test};
+													&Unit::SliTester::i32_test,	 &Unit::SliTester::ui8_test,
+													&Unit::SliTester::ui16_test, &Unit::SliTester::ui32_test};
 
 	static const std::array<std::string, 6> sli_test_names = {"i8 << imm",	"i16 << imm",  "i32 << imm",
-																  "ui8 << imm", "ui16 << imm", "ui32 << imm"};
+															  "ui8 << imm", "ui16 << imm", "ui32 << imm"};
 
 	static const std::array<TestFn, 6> sri_tests = {&Unit::SriTester::i8_test,	 &Unit::SriTester::i16_test,
-														&Unit::SriTester::i32_test,	 &Unit::SriTester::ui8_test,
-														&Unit::SriTester::ui16_test, &Unit::SriTester::ui32_test};
+													&Unit::SriTester::i32_test,	 &Unit::SriTester::ui8_test,
+													&Unit::SriTester::ui16_test, &Unit::SriTester::ui32_test};
 
 	static const std::array<std::string, 6> sri_test_names = {"i8 >> imm",	"i16 >> imm",  "i32 >> imm",
-																  "ui8 >> imm", "ui16 >> imm", "ui32 >> imm"};
+															  "ui8 >> imm", "ui16 >> imm", "ui32 >> imm"};
 
 	static const std::array<TestFn, 6> addi_tests = {&Unit::AddiTester::i8_test,   &Unit::AddiTester::i16_test,
-														 &Unit::AddiTester::i32_test,  &Unit::AddiTester::ui8_test,
-														 &Unit::AddiTester::ui16_test, &Unit::AddiTester::ui32_test};
+													 &Unit::AddiTester::i32_test,  &Unit::AddiTester::ui8_test,
+													 &Unit::AddiTester::ui16_test, &Unit::AddiTester::ui32_test};
 
 	static const std::array<std::string, 6> addi_test_names = {"i8 + imm",	"i16 + imm",  "i32 + imm",
-																   "ui8 + imm", "ui16 + imm", "ui32 + imm"};
+															   "ui8 + imm", "ui16 + imm", "ui32 + imm"};
 
 	static const std::array<TestFn, 6> slti_tests = {&Unit::SltiTester::i8_test,   &Unit::SltiTester::i16_test,
-														 &Unit::SltiTester::i32_test,  &Unit::SltiTester::ui8_test,
-														 &Unit::SltiTester::ui16_test, &Unit::SltiTester::ui32_test};
+													 &Unit::SltiTester::i32_test,  &Unit::SltiTester::ui8_test,
+													 &Unit::SltiTester::ui16_test, &Unit::SltiTester::ui32_test};
 
 	static const std::array<std::string, 6> slti_test_names = {"i8 < imm",	"i16 < imm",  "i32 < imm",
-																   "ui8 < imm", "ui16 < imm", "ui32 < imm"};
+															   "ui8 < imm", "ui16 < imm", "ui32 < imm"};
 
 	static const std::array<TestFn, 6> xori_tests = {&Unit::XoriTester::i8_test,   &Unit::XoriTester::i16_test,
-														 &Unit::XoriTester::i32_test,  &Unit::XoriTester::ui8_test,
-														 &Unit::XoriTester::ui16_test, &Unit::XoriTester::ui32_test};
+													 &Unit::XoriTester::i32_test,  &Unit::XoriTester::ui8_test,
+													 &Unit::XoriTester::ui16_test, &Unit::XoriTester::ui32_test};
 
 	static const std::array<std::string, 6> xori_test_names = {"i8 ^ imm",	"i16 ^ imm",  "i32 ^ imm",
-																   "ui8 ^ imm", "ui16 ^ imm", "ui32 ^ imm"};
+															   "ui8 ^ imm", "ui16 ^ imm", "ui32 ^ imm"};
 
-	static const std::array<TestFn, 6> ori_tests = {&Unit::OriTester::i8_test,   &Unit::OriTester::i16_test,
-														 &Unit::OriTester::i32_test,  &Unit::OriTester::ui8_test,
-														 &Unit::OriTester::ui16_test, &Unit::OriTester::ui32_test};
+	static const std::array<TestFn, 6> ori_tests = {&Unit::OriTester::i8_test,	 &Unit::OriTester::i16_test,
+													&Unit::OriTester::i32_test,	 &Unit::OriTester::ui8_test,
+													&Unit::OriTester::ui16_test, &Unit::OriTester::ui32_test};
 
-	static const std::array<std::string, 6> ori_test_names = {"i8 | imm",	"i16 | imm",  "i32 | imm",
-																   "ui8 | imm", "ui16 | imm", "ui32 | imm"};
+	static const std::array<std::string, 6> ori_test_names = {"i8 | imm",  "i16 | imm",	 "i32 | imm",
+															  "ui8 | imm", "ui16 | imm", "ui32 | imm"};
 
 	static const std::array<TestFn, 6> andi_tests = {&Unit::AndiTester::i8_test,   &Unit::AndiTester::i16_test,
-														 &Unit::AndiTester::i32_test,  &Unit::AndiTester::ui8_test,
-														 &Unit::AndiTester::ui16_test, &Unit::AndiTester::ui32_test};
+													 &Unit::AndiTester::i32_test,  &Unit::AndiTester::ui8_test,
+													 &Unit::AndiTester::ui16_test, &Unit::AndiTester::ui32_test};
 
 	static const std::array<std::string, 6> andi_test_names = {"i8 & imm",	"i16 & imm",  "i32 & imm",
-																   "ui8 & imm", "ui16 & imm", "ui32 & imm"};
+															   "ui8 & imm", "ui16 & imm", "ui32 & imm"};
 
 	void sli_test(Stats &stats) {
 		int i = 0;
