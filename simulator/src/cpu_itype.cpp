@@ -120,8 +120,11 @@ namespace Simulator {
 	void CPU::jalr_instruction(const char rd, const char func3, const char rs1, const short imm) {
 		if (func3 != 0x0) return;
 
+		int32_t imm12 = static_cast<int32_t>(imm) & 0xFFF;
+		if (imm12 & 0x800) imm12 |= ~0xFFF;
+
 		int val = pc + 4;
-		pc = registers[rs1].data + imm;
+		pc = static_cast<int>((registers[rs1].data + static_cast<uint32_t>(imm12)) & ~1u);
 		pc_modified = true;
 
 		Register res = {.data = static_cast<uint32_t>(val), .tag = registers[rd].tag};

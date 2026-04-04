@@ -20,13 +20,13 @@ namespace Simulator {
 		switch (tag) {
 		case Tag::UH:
 		case Tag::SH: {
-			memory[addr + 1] = (data >> 8);
+			memory[addr + 1] = (data >> 8) & 0xFF;
 		} break;
 		case Tag::UW:
 		case Tag::SW: {
-			memory[addr + 1] = (data >> 8);
-			memory[addr + 2] = (data >> 16);
-			memory[addr + 3] = (data >> 24);
+			memory[addr + 1] = (data >> 8) & 0xFF;
+			memory[addr + 2] = (data >> 16) & 0xFF;
+			memory[addr + 3] = (data >> 24) & 0xFF;
 		} break;
 		default:
 			break;

@@ -31,7 +31,7 @@ namespace Test::Unit {
 		return jalr_test(400000, Simulator::Tag::SW, Simulator::Tag::SW, 16, 400016, 4, Simulator::Tag::SW);
 	}
 	bool JalrTester::ui8_test() {
-		return jalr_test(40, Simulator::Tag::UB, Simulator::Tag::UB, 4, 44, 4, Simulator::Tag::UB);
+		return jalr_test(41, Simulator::Tag::UB, Simulator::Tag::UB, 4, 44, 4, Simulator::Tag::UB);
 	}
 	bool JalrTester::ui16_test() {
 		return jalr_test(60000, Simulator::Tag::UH, Simulator::Tag::UH, -20, 59980, 4, Simulator::Tag::UH);

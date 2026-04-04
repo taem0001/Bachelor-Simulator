@@ -3,10 +3,15 @@
 namespace Test::Unit {
 	static constexpr uint32_t JAL_X9 = (9u << 7) | 0x6Fu;
 
-	static bool jal_test(uint32_t rd_initial_data, Simulator::Tag rd_initial_tag, uint32_t imm,
+	static uint32_t encode_jal_imm(int32_t offset) {
+		const uint32_t imm = static_cast<uint32_t>(offset);
+		return ((imm & 0x100000u) << 11) | ((imm & 0xFF000u)) | ((imm & 0x800u) << 9) | ((imm & 0x7FEu) << 20);
+	}
+
+	static bool jal_test(uint32_t rd_initial_data, Simulator::Tag rd_initial_tag, int32_t offset,
 						 uint32_t expected_pc, uint32_t expected_rd_data, Simulator::Tag expected_rd_tag) {
 		Simulator::CPU cpu;
-		const uint32_t instr = (imm << 12) | JAL_X9;
+		const uint32_t instr = encode_jal_imm(offset) | JAL_X9;
 
 		cpu.set_register(9, rd_initial_data, rd_initial_tag);
 		cpu.execute_instruction(instr);
