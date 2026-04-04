@@ -77,6 +77,14 @@ namespace Simulator {
 
                 l_instruction(rd, func3, rs1, imm);
             } break;
+            case 0x67: {
+                const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+                const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
+                const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
+                const short imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN));
+
+                jalr_instruction(rd, func3, rs1, imm);
+            } break;
             case 0x13: { // i-type
                 const char rd = (instruction >> OPCODE_LEN) & 0x1F;
                 const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
@@ -121,6 +129,12 @@ namespace Simulator {
                     (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
                 b_instruction(imm4_1_11, func3, rs1, rs2, imm12_10_5);
+            } break;
+            case 0x6F: { // j-type
+                const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+                const int imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0xFFFFF;
+
+                j_instruction(rd, imm);
             } break;
             default:
                 break;

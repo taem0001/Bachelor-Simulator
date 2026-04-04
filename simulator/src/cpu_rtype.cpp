@@ -66,21 +66,19 @@ namespace Simulator {
 
 	Register _slt_instruction(Register &rs1, Register &rs2) {
 		uint32_t res_data;
-		if(is_unsigned(rs1.tag) && is_unsigned(rs2.tag)) {
-			res_data = rs1.data < rs2.data ? 1 : 0;
-		} else if(!is_unsigned(rs1.tag) && is_unsigned(rs2.tag)) {
-			res_data = static_cast<int32_t> (rs1.data) < 0 ? 1 : 0;
-			if(!res_data) {
-				res_data = static_cast<uint32_t> (rs1.data) < rs2.data ? 1 : 0;
-			}
-		} else if(is_unsigned(rs1.tag) && !is_unsigned(rs2.tag)) {
-			res_data = static_cast<int32_t> (rs2.data) < 0 ? 0 : 1;
-			if(res_data) {
-				res_data = rs1.data < static_cast<uint32_t> (rs2.data) ? 1 : 0;
-			}
-		} else if(!is_unsigned(rs1.tag) && !is_unsigned(rs2.tag)) {
-			res_data = static_cast<int32_t> (rs1.data) < static_cast<int32_t> (rs2.data) ? 1 : 0;
+		const bool rs1_unsigned = is_unsigned(rs1.tag);
+		const bool rs2_unsigned = is_unsigned(rs2.tag);
+
+		if (rs1_unsigned && rs2_unsigned) {
+			res_data = rs1.data < rs2.data;
+		} else if (!rs1_unsigned && rs2_unsigned) {
+			res_data = static_cast<int32_t>(rs1.data) < 0 || rs1.data < rs2.data;
+		} else if (rs1_unsigned && !rs2_unsigned) {
+			res_data = static_cast<int32_t>(rs2.data) >= 0 && rs1.data < static_cast<uint32_t>(rs2.data);
+		} else {
+			res_data = static_cast<int32_t>(rs1.data) < static_cast<int32_t>(rs2.data);
 		}
+
 		return {res_data, Tag::UB};
 	}
 

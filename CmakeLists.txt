@@ -14,6 +14,7 @@ add_library(simulator_lib
     simulator/src/cpu_ltype.cpp
     simulator/src/cpu_stype.cpp
     simulator/src/cpu_btype.cpp
+    simulator/src/cpu_jtype.cpp
     simulator/src/register.cpp
     simulator/src/tag.cpp
     simulator/src/file.cpp
