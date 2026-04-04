@@ -32,12 +32,16 @@ int main(int argc, char *argv[]) {
 	case 'l':
 		l_test(stats);
 		break;
+	case 'j':
+		jal_test(stats);
+		break;
 	default:
 		b_tests(stats);
 		r_tests(stats);
 		i_tests(stats);
 		si_tests(stats);
 		l_test(stats);
+		jal_test(stats);
 		s_test(stats);
 	}
 

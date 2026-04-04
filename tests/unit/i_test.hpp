@@ -3,6 +3,7 @@
 
 #include "i-type/addi.hpp"
 #include "i-type/andi.hpp"
+#include "i-type/jalr.hpp"
 #include "i-type/ori.hpp"
 #include "i-type/sli.hpp"
 #include "i-type/slti.hpp"
@@ -60,6 +61,13 @@ namespace Test {
 
 	static const std::array<std::string, 6> andi_test_names = {"i8 & imm",	"i16 & imm",  "i32 & imm",
 															   "ui8 & imm", "ui16 & imm", "ui32 & imm"};
+
+	static const std::array<TestFn, 6> jalr_tests = {&Unit::JalrTester::i8_test,   &Unit::JalrTester::i16_test,
+													   &Unit::JalrTester::i32_test,  &Unit::JalrTester::ui8_test,
+													   &Unit::JalrTester::ui16_test, &Unit::JalrTester::ui32_test};
+
+	static const std::array<std::string, 6> jalr_test_names = {"i8 jalr",  "i16 jalr",  "i32 jalr",
+													   "ui8 jalr", "ui16 jalr", "ui32 jalr"};
 
 	void sli_test(Stats &stats) {
 		int i = 0;
@@ -124,6 +132,15 @@ namespace Test {
 		}
 	}
 
+	void jalr_test(Stats &stats) {
+		int i = 0;
+		for (auto test : jalr_tests) {
+			bool ok = test();
+			print_result(stats, "JALR", jalr_test_names[i], ok);
+			i++;
+		}
+	}
+
 	void i_tests(Stats &stats) {
 		sli_test(stats);
 		sri_test(stats);
@@ -132,6 +149,7 @@ namespace Test {
 		xori_test(stats);
 		ori_test(stats);
 		andi_test(stats);
+		jalr_test(stats);
 	}
 } // namespace Test
 
