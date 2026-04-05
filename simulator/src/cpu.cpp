@@ -1,7 +1,7 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
-	CPU::CPU() : program_size_bytes(0), pc(0), pc_modified(false) {
+	CPU::CPU() : program_size_bytes(0), pc(0), pc_modified(false), ebreak(false) {
 		registers.fill({0, Tag::SW});
 		// Initialize stack pointer (x2) to top of simulated memory.
 		registers[2] = {MEMORY_SIZE_BYTES, Tag::UW};
@@ -56,12 +56,13 @@ namespace Simulator {
 		constexpr uint32_t INSTR_SIZE_BYTES = 4;
 
 		while (pc >= 0 && (static_cast<std::size_t>(pc) + (INSTR_SIZE_BYTES - 1) < program_size_bytes)) {
-			std::cout << std::hex << pc << std::endl;
 			const uint32_t instr = static_cast<uint32_t>(memory[pc]) | (static_cast<uint32_t>(memory[pc + 1]) << 8) |
 								   (static_cast<uint32_t>(memory[pc + 2]) << 16) |
 								   (static_cast<uint32_t>(memory[pc + 3]) << 24);
 			pc_modified = false;
+			ebreak = false;
 			execute_instruction(instr);
+			if (ebreak) break;
 			if (!pc_modified) pc += INSTR_SIZE_BYTES;
 		}
 
@@ -76,8 +77,6 @@ namespace Simulator {
 
 	// Instruction functions
 	void CPU::execute_instruction(const int instruction) {
-		// std::cout << std::bitset<32>(instruction) << '\n';
-
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
@@ -89,7 +88,7 @@ namespace Simulator {
 
 			l_instruction(rd, func3, rs1, imm);
 		} break;
-		case 0x67: {
+		case 0x67: { // i-type (jalr)
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
@@ -147,6 +146,11 @@ namespace Simulator {
 			const int imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0xFFFFF;
 
 			j_instruction(rd, imm);
+		} break;
+		case 0x73: { // x-type
+			const int bits = instruction >> OPCODE_LEN;
+
+			x_instruction(bits);
 		} break;
 		default:
 			break;

@@ -35,6 +35,7 @@ namespace Simulator {
 			std::size_t program_size_bytes;
 			int pc;
 			bool pc_modified;
+			bool ebreak;
 
 			void write_to_register(const char rd, const Register &r);
 			void print_registers();
@@ -47,6 +48,7 @@ namespace Simulator {
 			void b_instruction(const char imm4_1_11, const char func3, const char rs1, const char rs2,
 							   const char imm12_10_5);
 			void j_instruction(const char rd, const int imm);
+			void x_instruction(const int bits);
 			void jalr_instruction(const char rd, const char func3, const char rs1, const short imm);
 	};
 } // namespace Simulator
