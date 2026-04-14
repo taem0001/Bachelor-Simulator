@@ -5,6 +5,7 @@
 #include "unit/r_test.hpp"
 #include "unit/s_test.hpp"
 #include "unit/si_test.hpp"
+#include "unit/x_test.hpp"
 
 using namespace Test;
 
@@ -35,6 +36,9 @@ int main(int argc, char *argv[]) {
 	case 'j':
 		jal_test(stats);
 		break;
+	case 'x':
+		x_tests(stats);
+		break;
 	default:
 		b_tests(stats);
 		r_tests(stats);
@@ -43,6 +47,7 @@ int main(int argc, char *argv[]) {
 		l_test(stats);
 		jal_test(stats);
 		s_test(stats);
+		x_tests(stats);
 	}
 
 	std::cout << std::endl << "Passed: " << stats.passed << "  Failed: " << stats.failed << std::endl;
