@@ -1,7 +1,11 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
-	CPU::CPU() : pc(0) { registers.fill({0, Tag::SW}); }
+	CPU::CPU() : program_size_bytes(0), pc(0), pc_modified(false), ebreak(false) {
+		registers.fill({0, Tag::SW});
+		// Initialize stack pointer (x2) to top of simulated memory.
+		registers[2] = {MEMORY_SIZE_BYTES, Tag::UW};
+	}
 
 	// Getters/Setters
 	std::array<Register, REGISTERNUM> &CPU::get_registers() { return registers; }
@@ -13,17 +17,16 @@ namespace Simulator {
 
 	void CPU::set_memory(uint32_t addr, uint32_t data, Tag tag) {
 		memory[addr] = data & 0xFF;
-		switch (tag)
-		{
+		switch (tag) {
 		case Tag::UH:
 		case Tag::SH: {
-			memory[addr + 1] = (data >> 8);
+			memory[addr + 1] = (data >> 8) & 0xFF;
 		} break;
 		case Tag::UW:
 		case Tag::SW: {
-			memory[addr + 1] = (data >> 8);
-			memory[addr + 2] = (data >> 16);
-			memory[addr + 3] = (data >> 24);
+			memory[addr + 1] = (data >> 8) & 0xFF;
+			memory[addr + 2] = (data >> 16) & 0xFF;
+			memory[addr + 3] = (data >> 24) & 0xFF;
 		} break;
 		default:
 			break;
@@ -31,30 +34,39 @@ namespace Simulator {
 	}
 
 	void CPU::load_program(const std::string &path) {
+		std::ifstream in_file(path, std::ios::binary | std::ios::ate);
+		if (in_file) {
+			program_size_bytes = static_cast<std::size_t>(in_file.tellg());
+		} else {
+			program_size_bytes = 0;
+		}
+
+		pc = 0;
 		Simulator::load_program(path, memory, 0);
 	}
 
 	void CPU::print_registers() {
-		for (const Register& reg : get_registers()) {
-			std::cout << reg << '\n';
+		int i = 0;
+		for (const Register &reg : get_registers()) {
+			std::cout << "x" << i++ << ":" << reg << std::endl;
 		}
 	}
 
 	void CPU::run() {
-		while(pc+3 < MEMORY_SIZE_BYTES) {
-			uint32_t instr = memory[pc]
-				| (memory[pc + 1] << 8)
-				| (memory[pc + 2] << 16)
-				| (memory[pc + 3] << 24);
-			
-			if(instr == 0) {
-				print_registers();
-				return;
-			}
-			execute_instruction(instr);
+		constexpr uint32_t INSTR_SIZE_BYTES = 4;
 
-			pc += 4;
+		while (pc >= 0 && (static_cast<std::size_t>(pc) + (INSTR_SIZE_BYTES - 1) < program_size_bytes)) {
+			const uint32_t instr = static_cast<uint32_t>(memory[pc]) | (static_cast<uint32_t>(memory[pc + 1]) << 8) |
+								   (static_cast<uint32_t>(memory[pc + 2]) << 16) |
+								   (static_cast<uint32_t>(memory[pc + 3]) << 24);
+			pc_modified = false;
+			ebreak = false;
+			execute_instruction(instr);
+			if (ebreak) break;
+			if (!pc_modified) pc += INSTR_SIZE_BYTES;
 		}
+
+		print_registers();
 	}
 
 	void CPU::write_to_register(const char rd, const Register &r) {
@@ -65,8 +77,6 @@ namespace Simulator {
 
 	// Instruction functions
 	void CPU::execute_instruction(const int instruction) {
-		//std::cout << std::bitset<32>(instruction) << '\n';
-
 		char opcode = instruction & 0x7F;
 
 		switch (opcode) {
@@ -77,6 +87,14 @@ namespace Simulator {
 			const short imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN));
 
 			l_instruction(rd, func3, rs1, imm);
+		} break;
+		case 0x67: { // i-type (jalr)
+			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
+			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
+			const short imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN));
+
+			jalr_instruction(rd, func3, rs1, imm);
 		} break;
 		case 0x13: { // i-type
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
@@ -91,7 +109,8 @@ namespace Simulator {
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
 			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
-			const char func7 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
+			const char func7 =
+				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
 			r_instruction(rd, func3, rs1, rs2, func7);
 		} break;
@@ -100,16 +119,38 @@ namespace Simulator {
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
 			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
-			const char imm11_5 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
+			const char imm11_5 =
+				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
 			s_instruction(imm4_0, func3, rs1, rs2, imm11_5);
-		}
-		case 0x7B: {
+		} break;
+		case 0x7B: { // si-type
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func7 =
 				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
 
 			si_instruction(rd, func7);
+		} break;
+		case 0x63: { // b-type
+			const char imm4_1_11 = (instruction >> OPCODE_LEN) & 0x1F;
+			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
+			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
+			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
+			const char imm12_10_5 =
+				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
+
+			b_instruction(imm4_1_11, func3, rs1, rs2, imm12_10_5);
+		} break;
+		case 0x6F: { // j-type
+			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			const int imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0xFFFFF;
+
+			j_instruction(rd, imm);
+		} break;
+		case 0x73: { // x-type
+			const int bits = instruction >> OPCODE_LEN;
+
+			x_instruction(bits);
 		} break;
 		default:
 			break;

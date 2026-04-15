@@ -2,7 +2,7 @@
 
 namespace Simulator {
 
-    // i-type instruction functions
+	// i-type instruction functions
 	Register _sli_instruction(const Register &rs1, const int8_t imm) {
 		const uint8_t shamt = static_cast<uint8_t>(imm) & 0x1F;
 		const uint32_t res_data = rs1.data << shamt;
@@ -41,15 +41,15 @@ namespace Simulator {
 
 	Register _slti_instruction(const Register &rs1, const int32_t imm12) {
 		uint32_t res_data;
-        if(is_unsigned(rs1.tag)) {
+		if (is_unsigned(rs1.tag)) {
 			res_data = imm12 < 0 ? 0 : 1;
-			if(res_data) {
+			if (res_data) {
 				res_data = (rs1.data < static_cast<uint32_t>(imm12) ? 1 : 0);
 			}
-        } else {
-            const int32_t rs1_cast = static_cast<int32_t>(rs1.data);
+		} else {
+			const int32_t rs1_cast = static_cast<int32_t>(rs1.data);
 			res_data = (rs1_cast < imm12 ? 1 : 0);
-        }
+		}
 		return {res_data, Tag::UB};
 	}
 
@@ -80,26 +80,26 @@ namespace Simulator {
 			Register result = _addi_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
-		case 0x2: //SLTI
+		case 0x2: // SLTI
 		{
 			Register result = _slti_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
-		case 0x4: //XORI
+		case 0x4: // XORI
 		{
 			Register result = _xori_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
-		case 0x6: //ORI
+		case 0x6: // ORI
 		{
 			Register result = _ori_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
-		case 0x7: //ANDI
+		case 0x7: // ANDI
 		{
 			Register result = _andi_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
-		} break;	
+		} break;
 		case 0x1: // SLI
 		{
 			if (((imm >> 5) & 0x7F) != 0) break;
@@ -116,4 +116,18 @@ namespace Simulator {
 			break;
 		}
 	}
-}
+
+	void CPU::jalr_instruction(const char rd, const char func3, const char rs1, const short imm) {
+		if (func3 != 0x0) return;
+
+		int32_t imm12 = static_cast<int32_t>(imm) & 0xFFF;
+		if (imm12 & 0x800) imm12 |= ~0xFFF;
+
+		int val = pc + 4;
+		pc = static_cast<int>((registers[rs1].data + static_cast<uint32_t>(imm12)) & ~1u);
+		pc_modified = true;
+
+		Register res = {.data = static_cast<uint32_t>(val), .tag = registers[rd].tag};
+		write_to_register(rd, res);
+	}
+} // namespace Simulator

@@ -9,7 +9,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <variant>
 #include <vector>
 #include <bitset>
 
@@ -31,6 +30,6 @@
 #define TAG_SIGNED	 1
 
 //Memory
-#define MEMORY_SIZE_BYTES 100
+#define MEMORY_SIZE_BYTES 0x10000
 
 #endif

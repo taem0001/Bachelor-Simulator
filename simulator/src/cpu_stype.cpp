@@ -3,22 +3,15 @@
 namespace Simulator {
 
     void CPU::s_instruction(const char imm4_0, const char func3, const char rs1, const char rs2, const char imm11_5) {
+        (void)func3;
         int32_t imm = (static_cast<int32_t>(imm11_5 & 0x7F) << 5)
                 |  static_cast<int32_t>(imm4_0 & 0x1F);
+        if (imm & 0x800) imm |= ~0xFFF;
 
-        uint32_t addr;
-        // sign-extend 12-bit immediate and add based on immediate value
-        if (imm & 0x800) {
-            imm |= ~0xFFF;
-            if(imm * (-1) > registers[rs1].data) {
-                return;
-            } else {
-               addr = (registers[rs1].data) - static_cast<uint32_t> (static_cast<uint32_t> (imm) * -1);
-            }
-        } else {
-            addr = (registers[rs1].data) + imm;
-        }
-        if(addr > MEMORY_SIZE_BYTES) return;
+        int64_t addr64 = static_cast<int64_t>(registers[rs1].data) + imm;
+        if (addr64 < 0 || addr64 >= MEMORY_SIZE_BYTES) return;
+        uint32_t addr = static_cast<uint32_t>(addr64);
+
         uint32_t value = registers[rs2].data;
         Tag tag = registers[rs2].tag;
 
