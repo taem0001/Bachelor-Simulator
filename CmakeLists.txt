@@ -16,6 +16,7 @@ add_library(simulator_lib
     simulator/src/cpu_btype.cpp
     simulator/src/cpu_jtype.cpp
     simulator/src/cpu_xtype.cpp
+    simulator/src/cpu_utype.cpp
     simulator/src/register.cpp
     simulator/src/tag.cpp
     simulator/src/file.cpp
@@ -51,6 +52,7 @@ file(GLOB TEST_UNIT_FILES CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/s-type/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/b-type/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/j-type/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/u-type/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/x-type/*.cpp
 )
 

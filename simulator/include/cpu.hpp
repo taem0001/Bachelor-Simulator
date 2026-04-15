@@ -49,9 +49,12 @@ namespace Simulator {
 			void b_instruction(const char imm4_1_11, const char func3, const char rs1, const char rs2,
 							   const char imm12_10_5);
 			void j_instruction(const char rd, const int imm);
-			void ecall_instruction();
 			void x_instruction(const int bits);
+
+			void ecall_instruction();
 			void jalr_instruction(const char rd, const char func3, const char rs1, const short imm);
+			void lui_instruction(const char rd, const int imm);
+			void auipc_instruction(const char rd, const int imm);
 	};
 } // namespace Simulator
 

@@ -152,6 +152,18 @@ namespace Simulator {
 
 			x_instruction(bits);
 		} break;
+		case 0x37: { // u-type (lui)
+			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			const int imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0xFFFFF;
+
+			lui_instruction(rd, imm);
+		} break;
+		case 0x17: { // u-type (auipc)
+			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
+			const int imm = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0xFFFFF;
+
+			auipc_instruction(rd, imm);
+		} break;
 		default:
 			break;
 		};
