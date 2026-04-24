@@ -9,6 +9,14 @@ namespace Simulator {
 			const int value = static_cast<int>(registers[10].data);
 			std::cout << value;
 		} break;
+		case 4: {
+			int address = static_cast<int>(registers[10].data);
+			char c;
+			while ((c = static_cast<char>(memory[address])) != '\0') {
+				std::cout << c;
+				address++;
+			}
+		} break;
 		case 11: {
 			const char value = static_cast<char>(registers[10].data);
 			std::cout << value;

@@ -1,7 +1,7 @@
 #include "bne.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t BNE_X5_X6_12 = 0x00629C63;
+	static constexpr uint32_t BNE_X5_X6_12 = 0x00629663;
 
 	static bool bne_test(uint32_t a_val, uint32_t b_val, Simulator::Tag a_tag, Simulator::Tag b_tag,
 						 bool should_branch) {

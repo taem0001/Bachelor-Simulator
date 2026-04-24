@@ -1,7 +1,7 @@
 #include "blt.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t BLT_X5_X6_12 = 0x0062CC63;
+	static constexpr uint32_t BLT_X5_X6_12 = 0x0062C663;
 
 	static bool blt_test(uint32_t a_val, uint32_t b_val, Simulator::Tag a_tag, Simulator::Tag b_tag,
 						 bool should_branch) {

@@ -6,11 +6,11 @@ namespace Simulator {
 					   (((imm >> 9) & 0x3FF) << 1);
 		if (real_imm & 0x100000) real_imm |= 0xffe00000;
 
-		int val = pc + 4;
+		const uint32_t val = _bitwise_add(static_cast<uint32_t>(pc), 4u);
 		pc += real_imm;
 		pc_modified = true;
 
-		Register res = {.data = static_cast<uint32_t>(val), .tag = registers[rd].tag};
+		Register res = {.data = val, .tag = registers[rd].tag};
 		write_to_register(rd, res);
     }
 } // namespace Simulator

@@ -1,7 +1,7 @@
 #include "beq.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t BEQ_X5_X6_12 = 0x00628C63;
+	static constexpr uint32_t BEQ_X5_X6_12 = 0x00628663;
 
 	static bool beq_test(uint32_t a_val, uint32_t b_val, Simulator::Tag a_tag, Simulator::Tag b_tag,
 						 bool should_branch) {

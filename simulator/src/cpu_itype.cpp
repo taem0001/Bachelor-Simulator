@@ -33,7 +33,7 @@ namespace Simulator {
 
 	Register _addi_instruction(const Register &rs1, const int32_t imm) {
 		const uint32_t imm_cast = static_cast<uint32_t>(imm);
-		const uint32_t res_data = bitwise_add(rs1.data, imm_cast);
+		const uint32_t res_data = _bitwise_add(rs1.data, imm_cast);
 		const Tag res_tag = (rs1.tag == Tag::UW) ? Tag::UW : Tag::SW;
 
 		return {res_data, res_tag};
@@ -123,11 +123,11 @@ namespace Simulator {
 		int32_t imm12 = static_cast<int32_t>(imm) & 0xFFF;
 		if (imm12 & 0x800) imm12 |= ~0xFFF;
 
-		int val = pc + 4;
+		const uint32_t val = _bitwise_add(static_cast<uint32_t>(pc), 4u);
 		pc = static_cast<int>((registers[rs1].data + static_cast<uint32_t>(imm12)) & ~1u);
 		pc_modified = true;
 
-		Register res = {.data = static_cast<uint32_t>(val), .tag = registers[rd].tag};
+		Register res = {.data = val, .tag = registers[rd].tag};
 		write_to_register(rd, res);
 	}
 } // namespace Simulator

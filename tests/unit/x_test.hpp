@@ -7,10 +7,10 @@
 namespace Test {
 	using TestFn = bool (*)();
 
-	static const std::array<TestFn, 2> ecall_tests = {&Unit::EcallTester::print_int_test,
-											 &Unit::EcallTester::exit_test};
+	static const std::array<TestFn, 3> ecall_tests = {
+		&Unit::EcallTester::print_int_test, &Unit::EcallTester::print_char_test, &Unit::EcallTester::exit_test};
 
-	static const std::array<std::string, 2> ecall_test_names = {"print integer", "exit"};
+	static const std::array<std::string, 3> ecall_test_names = {"print integer", "print character", "exit"};
 
 	static const std::array<TestFn, 1> ebreak_tests = {&Unit::EbreakTester::test};
 

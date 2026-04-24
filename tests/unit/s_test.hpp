@@ -10,7 +10,8 @@ namespace Test {
 												  &Unit::STester::i32_test,	 &Unit::STester::ui8_test,
 												  &Unit::STester::ui16_test, &Unit::STester::ui32_test};
 
-	static const std::array<std::string, 6> s_test_names = {"S", "S", "S", "S", "S", "S"};
+	static const std::array<std::string, 6> s_test_names = {"ST i8",  "ST i16",	 "ST i32",
+															"ST ui8", "ST ui16", "ST ui32"};
 
 	void s_test(Stats &stats) {
 		int i = 0;

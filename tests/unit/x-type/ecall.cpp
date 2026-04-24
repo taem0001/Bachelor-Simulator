@@ -18,6 +18,19 @@ namespace Test::Unit {
 		return !cpu.get_ebreak() && output.str() == "42";
 	}
 
+	bool EcallTester::print_char_test() {
+		Simulator::CPU cpu;
+		cpu.set_register(17, 11, Simulator::Tag::UW);
+		cpu.set_register(10, 65, Simulator::Tag::UW);
+
+		std::ostringstream output;
+		auto *const original = std::cout.rdbuf(output.rdbuf());
+		cpu.execute_instruction(ECALL);
+		std::cout.rdbuf(original);
+
+		return !cpu.get_ebreak() && output.str() == "A";
+	}
+
 	bool EcallTester::exit_test() {
 		Simulator::CPU cpu;
 		cpu.set_register(17, 93, Simulator::Tag::UW);

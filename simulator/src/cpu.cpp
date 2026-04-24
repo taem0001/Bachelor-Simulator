@@ -132,14 +132,13 @@ namespace Simulator {
 			si_instruction(rd, func7);
 		} break;
 		case 0x63: { // b-type
-			const char imm4_1_11 = (instruction >> OPCODE_LEN) & 0x1F;
 			const char func3 = (instruction >> (OPCODE_LEN + REG_ENC_LEN)) & 0x7;
 			const char rs1 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN)) & 0x1F;
 			const char rs2 = (instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN)) & 0x1F;
-			const char imm12_10_5 =
-				(instruction >> (OPCODE_LEN + REG_ENC_LEN + FUNC3_LEN + REG_ENC_LEN + REG_ENC_LEN)) & 0x7F;
+			int imm = ((instruction >> 31) << 12) | (((instruction >> 7) & 0x1) << 11) |
+					  (((instruction >> 25) & 0x3F) << 5) | (((instruction >> 8) & 0xF) << 1);
 
-			b_instruction(imm4_1_11, func3, rs1, rs2, imm12_10_5);
+			b_instruction(func3, rs1, rs2, imm);
 		} break;
 		case 0x6F: { // j-type
 			const char rd = (instruction >> OPCODE_LEN) & 0x1F;
