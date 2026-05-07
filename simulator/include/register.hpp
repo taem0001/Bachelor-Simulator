@@ -5,18 +5,24 @@
 #include "tag.hpp"
 
 namespace Simulator {
-    struct Register {
+	struct Register {
 			uint32_t data;
 			Tag tag;
 
 			friend std::ostream &operator<<(std::ostream &out, const Register &r) noexcept {
-				return out << "(" << r.data << "; " << r.tag << ")";
+				switch (r.tag) {
+				case Tag::SB:
+				case Tag::SH:
+				case Tag::SW:
+					return out << "(" << static_cast<int>(r.data) << "; " << r.tag << ")";
+				default:
+					return out << "(" << r.data << "; " << r.tag << ")";
+				}
 			}
 
-            void mask_by_tag();
+			void mask_by_tag();
 	};
 
-    
-}
+} // namespace Simulator
 
 #endif
