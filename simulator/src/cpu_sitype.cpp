@@ -3,14 +3,20 @@
 namespace Simulator {
 	// si-type instructions
 	Register _cast_to_another_tag(const Register &r, const Tag &tag) {
-		int w = width_of(tag);
 		uint32_t res_data;
-		switch (w) {
-		case 0:
+		switch (tag) {
+		case Tag::UB:
 			res_data = r.data & 0xFF;
 			break;
-		case 1:
+		case Tag::SB:
+			res_data = static_cast<int32_t>(static_cast<int8_t>(r.data & 0xFF));
+			break;
+		case Tag::UH:
 			res_data = r.data & 0xFFFF;
+			break;
+		case Tag::SH:
+			res_data = static_cast<int32_t>(static_cast<int16_t>(r.data & 0xFFFF));
+			break;
 		default:
 			res_data = r.data;
 			break;
