@@ -12,7 +12,9 @@ namespace Simulator {
 			friend std::ostream &operator<<(std::ostream &out, const Register &r) noexcept {
 				switch (r.tag) {
 				case Tag::SB:
+					return out << "(" << static_cast<char>(r.data) << "; " << r.tag << ")";
 				case Tag::SH:
+					return out << "(" << static_cast<short>(r.data) << "; " << r.tag << ")";
 				case Tag::SW:
 					return out << "(" << static_cast<int>(r.data) << "; " << r.tag << ")";
 				default:
