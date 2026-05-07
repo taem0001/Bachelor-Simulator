@@ -1,9 +1,21 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
-    // si-type instructions
+	// si-type instructions
 	Register _cast_to_another_tag(const Register &r, const Tag &tag) {
-		const uint32_t res_data = r.data;
+		int w = width_of(tag);
+		uint32_t res_data;
+		switch (w) {
+		case 0:
+			res_data = r.data & 0xFF;
+			break;
+		case 1:
+			res_data = r.data & 0xFFFF;
+		default:
+			res_data = r.data;
+			break;
+		}
+
 		const Tag res_tag = tag;
 
 		return {res_data, res_tag};
@@ -45,4 +57,4 @@ namespace Simulator {
 			break;
 		}
 	}
-}
+} // namespace Simulator

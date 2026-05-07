@@ -1,6 +1,17 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
+    static constexpr Tag load_tag_from_func3(const char func3) {
+        switch (func3) {
+        case 0x0: return Tag::SB;
+        case 0x1: return Tag::SH;
+        case 0x2: return Tag::SW;
+        case 0x4: return Tag::UB;
+        case 0x5: return Tag::UH;
+        case 0x7: return Tag::UW;
+        default: return Tag::SW;
+        }
+    }
 
 
     void CPU::l_instruction(const char rd, const char func3, const char rs1, const short imm) {
@@ -22,7 +33,7 @@ namespace Simulator {
             case 0x0: { //LB
                 uint32_t result = memory[addr];
                 if(result & 0x80) result |= ~0xFF;
-                write_to_register(rd, {result, Tag::SB});
+                write_to_register(rd, {result, load_tag_from_func3(func3)});
             } break;
             case 0x1: { // LH
                 if (addr + 1 >= MEMORY_SIZE_BYTES) {
@@ -31,7 +42,7 @@ namespace Simulator {
                 }
                 uint32_t result = memory[addr] | (memory[addr + 1] << 8);
                 if(result & 0x8000) result |= ~0xFFFF;
-                write_to_register(rd, {result, Tag::SH});
+                write_to_register(rd, {result, load_tag_from_func3(func3)});
             } break;
             case 0x2: { // LW
                 if (addr + 3 >= MEMORY_SIZE_BYTES) {
@@ -42,11 +53,11 @@ namespace Simulator {
                                 | (memory[addr + 1] << 8)
                                 | (memory[addr + 2] << 16)
                                 | (memory[addr + 3] << 24);
-                write_to_register(rd, {result, Tag::SW});
+                write_to_register(rd, {result, load_tag_from_func3(func3)});
             } break;
             case 0x4: { // LBU
                 uint32_t result = memory[addr];
-                write_to_register(rd, {result, Tag::UB});
+                write_to_register(rd, {result, load_tag_from_func3(func3)});
             } break;
             case 0x5: { // LHU
                 if (addr + 1 >= MEMORY_SIZE_BYTES) {
@@ -54,7 +65,7 @@ namespace Simulator {
                     std::exit(1);
                 }
                 uint32_t result = memory[addr] | (memory[addr + 1] << 8);
-                write_to_register(rd, {result, Tag::UH});
+                write_to_register(rd, {result, load_tag_from_func3(func3)});
             } break;
             case 0x7: { // LWU
                 if (addr + 3 >= MEMORY_SIZE_BYTES) {
@@ -65,7 +76,7 @@ namespace Simulator {
                                 | (memory[addr + 1] << 8)
                                 | (memory[addr + 2] << 16)
                                 | (memory[addr + 3] << 24);
-                write_to_register(rd, {result, Tag::UW});
+                write_to_register(rd, {result, load_tag_from_func3(func3)});
             } break;
             default:
                 break;

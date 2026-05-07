@@ -58,6 +58,8 @@ namespace Test::Unit {
 			static bool ui32_i32_not_equal_test();
 			static bool ui32_ui8_not_equal_test();
 			static bool ui32_ui16_not_equal_test();
+
+			static bool mixed_tag_equal_test();
 	};
 } // namespace Test::Unit
 

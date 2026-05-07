@@ -96,6 +96,9 @@ namespace Test::Unit {
 	bool BeqTester::i32_ui16_not_equal_test() {
 		return beq_test(-1000, 60000, Simulator::Tag::SW, Simulator::Tag::UH, false);
 	}
+	bool BeqTester::mixed_tag_equal_test() {
+		return beq_test(32, 32, Simulator::Tag::SB, Simulator::Tag::UW, true);
+	}
 	bool BeqTester::i32_ui32_not_equal_test() {
 		return beq_test(-1, 4000000000, Simulator::Tag::SW, Simulator::Tag::UW, false);
 	}

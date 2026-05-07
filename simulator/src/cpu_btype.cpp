@@ -1,6 +1,23 @@
 #include "../include/cpu.hpp"
 
 namespace Simulator {
+	static uint32_t normalized_value(const Register &reg) {
+		switch (width_of(reg.tag)) {
+		case 0x0: {
+			const uint32_t value = reg.data & 0xFFu;
+			if (is_unsigned(reg.tag)) return value;
+			return (value & 0x80u) ? (value | 0xFFFFFF00u) : value;
+		}
+		case 0x1: {
+			const uint32_t value = reg.data & 0xFFFFu;
+			if (is_unsigned(reg.tag)) return value;
+			return (value & 0x8000u) ? (value | 0xFFFF0000u) : value;
+		}
+		default:
+			return reg.data;
+		}
+	}
+
 	int _blt_instruction(const Register &rs1, const Register &rs2, const int imm, bool &modified) {
 		const bool rs1_unsigned = is_unsigned(rs1.tag);
 		const bool rs2_unsigned = is_unsigned(rs2.tag);
@@ -96,13 +113,13 @@ namespace Simulator {
 
 		switch (func3) {
 		case 0x0: // beq
-			if ((registers[rs1].data == registers[rs2].data) && (registers[rs1].tag == registers[rs2].tag)) {
+			if (normalized_value(registers[rs1]) == normalized_value(registers[rs2])) {
 				pc += imm;
 				pc_modified = true;
 			}
 			break;
 		case 0x1: // bne
-			if ((registers[rs1].data != registers[rs2].data) || (registers[rs1].tag != registers[rs2].tag)) {
+			if (normalized_value(registers[rs1]) != normalized_value(registers[rs2])) {
 				pc += imm;
 				pc_modified = true;
 			}

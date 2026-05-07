@@ -69,7 +69,7 @@ namespace Test::Unit {
 		return bne_test(10, 65000, Simulator::Tag::SB, Simulator::Tag::UH, true);
 	}
 	bool BneTester::i8_ui32_not_equal_test() {
-		return bne_test(1, 3000000000, Simulator::Tag::SB, Simulator::Tag::UW, true);
+		return bne_test(32, 32, Simulator::Tag::SB, Simulator::Tag::UW, false);
 	}
 	bool BneTester::i16_i8_not_equal_test() {
 		return bne_test(-1234, 12, Simulator::Tag::SH, Simulator::Tag::SB, true);
@@ -141,5 +141,8 @@ namespace Test::Unit {
 	}
 	bool BneTester::ui32_ui16_not_equal_test() {
 		return bne_test(3000000000, 60000, Simulator::Tag::UW, Simulator::Tag::UH, true);
+	}
+	bool BneTester::mixed_tag_equal_test() {
+		return bne_test(0x12345678, 0x12345678, Simulator::Tag::SB, Simulator::Tag::UW, false);
 	}
 } // namespace Test::Unit
