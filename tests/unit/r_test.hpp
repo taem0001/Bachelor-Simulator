@@ -9,6 +9,8 @@
 #include "r-type/sr.hpp"
 #include "r-type/sub.hpp"
 #include "r-type/xor.hpp"
+#include "r-type/mul.hpp"
+#include "r-type/mulh.hpp"
 
 namespace Test {
 	using TestFn = bool (*)();
@@ -269,6 +271,61 @@ namespace Test {
 		"ui16 & ui32", "ui32 & i8",	 "ui32 & i16", "ui32 & i32", "ui32 & ui8",	"ui32 & ui16",
 	};
 
+	static const std::array<TestFn, 36> mul_tests = {
+		&Unit::MulTester::i8_i8_test,     &Unit::MulTester::i16_i16_test,   &Unit::MulTester::i32_i32_test,
+		&Unit::MulTester::ui8_ui8_test,   &Unit::MulTester::ui16_ui16_test, &Unit::MulTester::ui32_ui32_test,
+
+		&Unit::MulTester::i8_i16_test,    &Unit::MulTester::i8_i32_test,    &Unit::MulTester::i8_ui8_test,
+		&Unit::MulTester::i8_ui16_test,   &Unit::MulTester::i8_ui32_test,
+
+		&Unit::MulTester::i16_i8_test,    &Unit::MulTester::i16_i32_test,   &Unit::MulTester::i16_ui8_test,
+		&Unit::MulTester::i16_ui16_test,  &Unit::MulTester::i16_ui32_test,
+
+		&Unit::MulTester::i32_i8_test,    &Unit::MulTester::i32_i16_test,   &Unit::MulTester::i32_ui8_test,
+		&Unit::MulTester::i32_ui16_test,  &Unit::MulTester::i32_ui32_test,
+
+		&Unit::MulTester::ui8_i8_test,    &Unit::MulTester::ui8_i16_test,   &Unit::MulTester::ui8_i32_test,
+		&Unit::MulTester::ui8_ui16_test,  &Unit::MulTester::ui8_ui32_test,
+
+		&Unit::MulTester::ui16_i8_test,   &Unit::MulTester::ui16_i16_test,  &Unit::MulTester::ui16_i32_test,
+		&Unit::MulTester::ui16_ui8_test,  &Unit::MulTester::ui16_ui32_test,
+
+		&Unit::MulTester::ui32_i8_test,   &Unit::MulTester::ui32_i16_test,  &Unit::MulTester::ui32_i32_test,
+		&Unit::MulTester::ui32_ui8_test,  &Unit::MulTester::ui32_ui16_test,
+	};
+
+	static const std::array<std::string, 36> mul_test_names = {
+		"i8 * i8",      "i16 * i16",    "i32 * i32",    "ui8 * ui8",    "ui16 * ui16", "ui32 * ui32",
+		"i8 * i16",     "i8 * i32",     "i8 * ui8",     "i8 * ui16",    "i8 * ui32",   "i16 * i8",
+		"i16 * i32",    "i16 * ui8",    "i16 * ui16",   "i16 * ui32",   "i32 * i8",    "i32 * i16",
+		"i32 * ui8",    "i32 * ui16",   "i32 * ui32",   "ui8 * i8",     "ui8 * i16",   "ui8 * i32",
+		"ui8 * ui16",   "ui8 * ui32",   "ui16 * i8",    "ui16 * i16",   "ui16 * i32",  "ui16 * ui8",
+		"ui16 * ui32",  "ui32 * i8",    "ui32 * i16",   "ui32 * i32",   "ui32 * ui8",  "ui32 * ui16",
+	};
+
+	static const std::array<TestFn, 36> mulh_tests = {
+		&Unit::MulhTester::i8_i8_test,     &Unit::MulhTester::i16_i16_test,   &Unit::MulhTester::i32_i32_test,
+		&Unit::MulhTester::ui8_ui8_test,   &Unit::MulhTester::ui16_ui16_test, &Unit::MulhTester::ui32_ui32_test,
+
+		&Unit::MulhTester::i8_i16_test,    &Unit::MulhTester::i8_i32_test,    &Unit::MulhTester::i8_ui8_test,
+		&Unit::MulhTester::i8_ui16_test,   &Unit::MulhTester::i8_ui32_test,
+
+		&Unit::MulhTester::i16_i8_test,    &Unit::MulhTester::i16_i32_test,   &Unit::MulhTester::i16_ui8_test,
+		&Unit::MulhTester::i16_ui16_test,  &Unit::MulhTester::i16_ui32_test,
+
+		&Unit::MulhTester::i32_i8_test,    &Unit::MulhTester::i32_i16_test,   &Unit::MulhTester::i32_ui8_test,
+		&Unit::MulhTester::i32_ui16_test,  &Unit::MulhTester::i32_ui32_test,
+
+		&Unit::MulhTester::ui8_i8_test,    &Unit::MulhTester::ui8_i16_test,   &Unit::MulhTester::ui8_i32_test,
+		&Unit::MulhTester::ui8_ui16_test,  &Unit::MulhTester::ui8_ui32_test,
+
+		&Unit::MulhTester::ui16_i8_test,   &Unit::MulhTester::ui16_i16_test,  &Unit::MulhTester::ui16_i32_test,
+		&Unit::MulhTester::ui16_ui8_test,  &Unit::MulhTester::ui16_ui32_test,
+
+		&Unit::MulhTester::ui32_i8_test,   &Unit::MulhTester::ui32_i16_test,  &Unit::MulhTester::ui32_i32_test,
+		&Unit::MulhTester::ui32_ui8_test,  &Unit::MulhTester::ui32_ui16_test,
+	};
+
 	void add_test(Stats &stats) {
 		int i = 0;
 		for (auto test : add_tests) {
@@ -341,6 +398,24 @@ namespace Test {
 		}
 	}
 
+	void mul_test(Stats &stats) {
+		int i = 0;
+		for (auto test : mul_tests) {
+			bool ok = test();
+			print_result(stats, "MUL", mul_test_names[i], ok);
+			i++;
+		}
+	}
+
+	void mulh_test(Stats &stats) {
+		int i = 0;
+		for (auto test : mulh_tests) {
+			bool ok = test();
+			print_result(stats, "MULH", mul_test_names[i], ok);
+			i++;
+		}
+	}
+
 	void r_tests(Stats &stats) {
 		add_test(stats);
 		sub_test(stats);
@@ -350,6 +425,8 @@ namespace Test {
 		xor_test(stats);
 		or_test(stats);
 		and_test(stats);
+		mul_test(stats);
+		mulh_test(stats);
 	}
 } // namespace Test
 
