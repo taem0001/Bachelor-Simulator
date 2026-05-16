@@ -177,16 +177,52 @@ namespace Simulator {
 		return {static_cast<uint32_t>(dividend % divisor), res_tag};
 	}
 
-	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
+	Register _mul_instruction(Register &rs1, Register &rs2) {
+		const uint32_t res_data = (rs1.data * rs2.data);
+		Tag res_tag = (rs1.tag == Tag::UW || rs2.tag == Tag::UW) ? Tag::UW : Tag::SW;
+		Register result = {res_data, res_tag};
+		return result;
+	}
+
+	Register _mulh_instruction(Register &rs1, Register &rs2) {
+		uint64_t data;
+		if(!is_unsigned(rs1.tag) || !is_unsigned(rs2.tag)) {
+			if(is_unsigned(rs1.tag)) {
+				data = ((int64_t) rs1.data * (int64_t)(int32_t)rs2.data);
+			} else if(is_unsigned(rs2.tag)) {
+				data = ((int64_t)(int32_t)rs1.data * (int64_t) rs2.data);
+			} else {
+				data = ((int64_t)(int32_t)rs1.data * (int64_t)(int32_t)rs2.data);
+			}
+		} else {
+			data = ((uint64_t) rs1.data * (uint64_t) rs2.data);
+		}
+		const uint32_t res_data = (data >> 32);
+		Tag res_tag = (rs1.tag == Tag::UW || rs2.tag == Tag::UW) ? Tag::UW : Tag::SW;
+		Register result = {res_data, res_tag};
+		return result;
+	}
+
+    void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
 		switch (func3) {
 		case 0x0: // ADD
 		{
-			Register result = _add_instruction(registers[rs1], registers[rs2]);
+			Register result;
+			if(func7 == 0b0000001) {
+				result = _mul_instruction(registers[rs1], registers[rs2]);
+			} else {
+				result = _add_instruction(registers[rs1], registers[rs2]);
+			}
 			write_to_register(rd, result);
 		} break;
 		case 0x1: // SUB
 		{
-			Register result = _sub_instruction(registers[rs1], registers[rs2]);
+			Register result;
+			if(func7 == 0b0000001) {
+				result = _mulh_instruction(registers[rs1], registers[rs2]);
+			} else {
+				result = _sub_instruction(registers[rs1], registers[rs2]);
+			}
 			write_to_register(rd, result);
 		} break;
 		case 0x2: // SLT
