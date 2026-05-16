@@ -1,11 +1,9 @@
 #include "../include/cpu.hpp"
 
-
-
 namespace Simulator {
 
 	// r-type instruction functions
-    Register _add_instruction(const Register &rs1, const Register &rs2) {
+	Register _add_instruction(const Register &rs1, const Register &rs2) {
 		const Tag t1 = rs1.tag;
 		const Tag t2 = rs2.tag;
 
@@ -36,7 +34,7 @@ namespace Simulator {
 		return {res_data, res_tag};
 	}
 
-    Register _sl_instruction(const Register &rs1, const Register &rs2) {
+	Register _sl_instruction(const Register &rs1, const Register &rs2) {
 		const uint8_t shamt = static_cast<uint8_t>(rs2.data) & 0x1F;
 		const uint32_t res_data = rs1.data << shamt;
 
@@ -103,7 +101,83 @@ namespace Simulator {
 		return result;
 	}
 
-    void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
+	static bool _promotes_to_unsigned(const Register &reg) {
+		return width_of(reg.tag) == TAG_WORD && is_unsigned(reg.tag);
+	}
+
+	static int32_t _promoted_signed_value(const Register &reg) {
+		switch (width_of(reg.tag)) {
+		case TAG_BYTE: {
+			const uint32_t value = reg.data & 0xFFu;
+			if (is_unsigned(reg.tag)) return static_cast<int32_t>(value);
+			return (value & 0x80u) ? static_cast<int32_t>(value | 0xFFFFFF00u) : static_cast<int32_t>(value);
+		}
+		case TAG_HALF: {
+			const uint32_t value = reg.data & 0xFFFFu;
+			if (is_unsigned(reg.tag)) return static_cast<int32_t>(value);
+			return (value & 0x8000u) ? static_cast<int32_t>(value | 0xFFFF0000u) : static_cast<int32_t>(value);
+		}
+		default:
+			return static_cast<int32_t>(reg.data);
+		}
+	}
+
+	static uint32_t _promoted_unsigned_value(const Register &reg) {
+		switch (width_of(reg.tag)) {
+		case TAG_BYTE:
+			return static_cast<uint32_t>(_promoted_signed_value(reg));
+		case TAG_HALF:
+			return static_cast<uint32_t>(_promoted_signed_value(reg));
+		default:
+			return reg.data;
+		}
+	}
+
+	Register _div_instruction(const Register &rs1, const Register &rs2) {
+		const bool is_result_unsigned = _promotes_to_unsigned(rs1) || _promotes_to_unsigned(rs2);
+		const Tag res_tag = is_result_unsigned ? Tag::UW : Tag::SW;
+
+		if (rs2.data == 0) {
+			return {0xFFFFFFFFu, res_tag};
+		}
+
+		if (is_result_unsigned) {
+			const uint32_t dividend = _promoted_unsigned_value(rs1);
+			const uint32_t divisor = _promoted_unsigned_value(rs2);
+			return {dividend / divisor, res_tag};
+		}
+
+		const int32_t dividend = _promoted_signed_value(rs1);
+		const int32_t divisor = _promoted_signed_value(rs2);
+		if (dividend == static_cast<int32_t>(0x80000000u) && divisor == -1) {
+			return {static_cast<uint32_t>(dividend), res_tag};
+		}
+		return {static_cast<uint32_t>(dividend / divisor), res_tag};
+	}
+
+	Register _rem_instruction(const Register &rs1, const Register &rs2) {
+		const bool is_result_unsigned = _promotes_to_unsigned(rs1) || _promotes_to_unsigned(rs2);
+		const Tag res_tag = is_result_unsigned ? Tag::UW : Tag::SW;
+
+		if (rs2.data == 0) {
+			return {_promoted_unsigned_value(rs1), res_tag};
+		}
+
+		if (is_result_unsigned) {
+			const uint32_t dividend = _promoted_unsigned_value(rs1);
+			const uint32_t divisor = _promoted_unsigned_value(rs2);
+			return {dividend % divisor, res_tag};
+		}
+
+		const int32_t dividend = _promoted_signed_value(rs1);
+		const int32_t divisor = _promoted_signed_value(rs2);
+		if (dividend == static_cast<int32_t>(0x80000000u) && divisor == -1) {
+			return {0u, res_tag};
+		}
+		return {static_cast<uint32_t>(dividend % divisor), res_tag};
+	}
+
+	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
 		switch (func3) {
 		case 0x0: // ADD
 		{
@@ -115,7 +189,7 @@ namespace Simulator {
 			Register result = _sub_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
-		case 0x2: //SLT
+		case 0x2: // SLT
 		{
 			Register result = _slt_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
@@ -133,13 +207,23 @@ namespace Simulator {
 		} break;
 		case 0x4: // XOR
 		{
-			Register result = _xor_instruction(registers[rs1], registers[rs2]);
-			write_to_register(rd, result);
+			if (func7 == 0x1) {
+				Register result = _div_instruction(registers[rs1], registers[rs2]);
+				write_to_register(rd, result);
+			} else {
+				Register result = _xor_instruction(registers[rs1], registers[rs2]);
+				write_to_register(rd, result);
+			}
 		} break;
 		case 0x6: // OR
 		{
-			Register result = _or_instruction(registers[rs1], registers[rs2]);
-			write_to_register(rd, result);
+			if (func7 == 0x1) {
+				Register result = _rem_instruction(registers[rs1], registers[rs2]);
+				write_to_register(rd, result);
+			} else {
+				Register result = _or_instruction(registers[rs1], registers[rs2]);
+				write_to_register(rd, result);
+			}
 		} break;
 		case 0x7: // AND
 		{
@@ -150,4 +234,4 @@ namespace Simulator {
 			break;
 		}
 	}
-}
+} // namespace Simulator
