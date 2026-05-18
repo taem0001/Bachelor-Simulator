@@ -21,26 +21,26 @@ namespace Test::Unit {
 
 	bool SltiTester::i8_test() {
 		int8_t a = -110;
-		return slti_test(a, Simulator::Tag::SB, 100, 1, Simulator::Tag::UB);
+		return slti_test(a, Simulator::Tag::SB, 100, 1, Simulator::Tag::SW);
 	}
 	bool SltiTester::i16_test() {
 		int16_t a = 5000;
-		return slti_test(a, Simulator::Tag::SH, -500, 0, Simulator::Tag::UB);
+		return slti_test(a, Simulator::Tag::SH, -500, 0, Simulator::Tag::SW);
 	}
 	bool SltiTester::i32_test() {
 		int32_t a = 100000;
-		return slti_test(a, Simulator::Tag::SW, 1000, 0, Simulator::Tag::UB);
+		return slti_test(a, Simulator::Tag::SW, 1000, 0, Simulator::Tag::SW);
 	}
 	bool SltiTester::ui8_test() {
 		uint8_t a = 40;
-		return slti_test(a, Simulator::Tag::UB, 100, 1, Simulator::Tag::UB);
+		return slti_test(a, Simulator::Tag::UB, 100, 1, Simulator::Tag::SW);
 	}
 	bool SltiTester::ui16_test() {
 		uint16_t a = 40000;
-		return slti_test(a, Simulator::Tag::UH, -400, 0, Simulator::Tag::UB);
+		return slti_test(a, Simulator::Tag::UH, -400, 0, Simulator::Tag::SW);
 	}
 	bool SltiTester::ui32_test() {
 		uint32_t a = 25005433;
-		return slti_test(a, Simulator::Tag::UW, 1200, 0, Simulator::Tag::UB);
+		return slti_test(a, Simulator::Tag::UW, 1200, 0, Simulator::Tag::SW);
 	}
 } // namespace Test::Unit

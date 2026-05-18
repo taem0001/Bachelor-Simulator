@@ -50,7 +50,7 @@ namespace Simulator {
 			const int32_t rs1_cast = static_cast<int32_t>(rs1.data);
 			res_data = (rs1_cast < imm12 ? 1 : 0);
 		}
-		return {res_data, Tag::UB};
+		return {res_data, Tag::SW};
 	}
 
 	Register _xori_instruction(Register &rs1, uint32_t imm12) {

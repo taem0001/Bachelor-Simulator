@@ -77,7 +77,7 @@ namespace Simulator {
 			res_data = static_cast<int32_t>(rs1.data) < static_cast<int32_t>(rs2.data);
 		}
 
-		return {res_data, Tag::UB};
+		return {res_data, Tag::SW};
 	}
 
 	Register _xor_instruction(Register &rs1, Register &rs2) {
