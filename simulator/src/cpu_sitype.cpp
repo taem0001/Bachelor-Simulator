@@ -18,8 +18,18 @@ namespace Simulator {
 			res_data = static_cast<int32_t>(static_cast<int16_t>(r.data & 0xFFFF));
 			break;
 		default:
-			res_data = r.data;
-			break;
+		{
+			if(tag == Tag::SW) {
+				if(r.tag == Tag::SB) {
+					res_data = static_cast<int32_t>(static_cast<int8_t>(r.data));
+				} else if(r.tag == Tag::SH) {
+					res_data = static_cast<int32_t>(static_cast<int16_t>(r.data));
+				}
+			} else {
+				res_data = r.data;
+			}
+			
+		} break;
 		}
 
 		const Tag res_tag = tag;
