@@ -42,8 +42,10 @@ namespace Simulator {
 			program_size_bytes = 0;
 		}
 
+		program.reserve(program_size_bytes);
+
 		pc = 0;
-		Simulator::load_program(path, memory, 0);
+		Simulator::load_program(path, program, program_size_bytes, 0);
 	}
 
 	void CPU::print_registers() {
@@ -57,9 +59,9 @@ namespace Simulator {
 		constexpr uint32_t INSTR_SIZE_BYTES = 4;
 
 		while (pc >= 0 && (static_cast<std::size_t>(pc) + (INSTR_SIZE_BYTES - 1) < program_size_bytes)) {
-			const uint32_t instr = static_cast<uint32_t>(memory[pc]) | (static_cast<uint32_t>(memory[pc + 1]) << 8) |
-								   (static_cast<uint32_t>(memory[pc + 2]) << 16) |
-								   (static_cast<uint32_t>(memory[pc + 3]) << 24);
+			const uint32_t instr = static_cast<uint32_t>(program[pc]) | (static_cast<uint32_t>(program[pc + 1]) << 8) |
+								   (static_cast<uint32_t>(program[pc + 2]) << 16) |
+								   (static_cast<uint32_t>(program[pc + 3]) << 24);
 			pc_modified = false;
 			ebreak = false;
 			execute_instruction(instr);
