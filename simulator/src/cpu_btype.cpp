@@ -19,11 +19,13 @@ namespace Simulator {
 	}
 
 	int _blt_instruction(const Register &rs1, const Register &rs2, const int imm, bool &modified) {
+		const uint32_t v1 = normalized_value(rs1);
+		const uint32_t v2 = normalized_value(rs2);
 		const bool rs1_unsigned = is_unsigned(rs1.tag);
 		const bool rs2_unsigned = is_unsigned(rs2.tag);
 
 		if (rs1_unsigned && rs2_unsigned) {
-			if (rs1.data < rs2.data) {
+			if (v1 < v2) {
 				modified = true;
 				return imm;
 			}
@@ -31,8 +33,8 @@ namespace Simulator {
 		}
 
 		if (!rs1_unsigned && !rs2_unsigned) {
-			int32_t rs1_signed = static_cast<int32_t>(rs1.data);
-			int32_t rs2_signed = static_cast<int32_t>(rs2.data);
+			int32_t rs1_signed = static_cast<int32_t>(v1);
+			int32_t rs2_signed = static_cast<int32_t>(v2);
 			if (rs1_signed < rs2_signed) {
 				modified = true;
 				return imm;
@@ -41,21 +43,21 @@ namespace Simulator {
 		}
 
 		if (rs1_unsigned && !rs2_unsigned) {
-			int32_t rs2_signed = static_cast<int32_t>(rs2.data);
+			int32_t rs2_signed = static_cast<int32_t>(v2);
 			if (rs2_signed < 0) return 0;
-			if (rs1.data < static_cast<uint32_t>(rs2_signed)) {
+			if (v1 < static_cast<uint32_t>(rs2_signed)) {
 				modified = true;
 				return imm;
 			}
 			return 0;
 		}
 
-		int32_t rs1_signed = static_cast<int32_t>(rs1.data);
+		int32_t rs1_signed = static_cast<int32_t>(v1);
 		if (rs1_signed < 0) {
 			modified = true;
 			return imm;
 		}
-		if (static_cast<uint32_t>(rs1_signed) < rs2.data) {
+		if (static_cast<uint32_t>(rs1_signed) < v2) {
 			modified = true;
 			return imm;
 		}
@@ -63,20 +65,22 @@ namespace Simulator {
 	}
 
 	int _bge_instruction(const Register &rs1, const Register &rs2, const int imm, bool &modified) {
+		const uint32_t v1 = normalized_value(rs1);
+		const uint32_t v2 = normalized_value(rs2);
 		const bool rs1_unsigned = is_unsigned(rs1.tag);
-		const bool rs2_unsgined = is_unsigned(rs2.tag);
+		const bool rs2_unsigned = is_unsigned(rs2.tag);
 
-		if (rs1_unsigned && rs2_unsgined) {
-			if (rs1.data >= rs2.data) {
+		if (rs1_unsigned && rs2_unsigned) {
+			if (v1 >= v2) {
 				modified = true;
 				return imm;
 			}
 			return 0;
 		}
 
-		if (!rs1_unsigned && !rs2_unsgined) {
-			int32_t rs1_signed = static_cast<int32_t>(rs1.data);
-			int32_t rs2_signed = static_cast<int32_t>(rs2.data);
+		if (!rs1_unsigned && !rs2_unsigned) {
+			int32_t rs1_signed = static_cast<int32_t>(v1);
+			int32_t rs2_signed = static_cast<int32_t>(v2);
 			if (rs1_signed >= rs2_signed) {
 				modified = true;
 				return imm;
@@ -84,22 +88,22 @@ namespace Simulator {
 			return 0;
 		}
 
-		if (rs1_unsigned && !rs2_unsgined) {
-			int32_t rs2_signed = static_cast<int32_t>(rs2.data);
+		if (rs1_unsigned && !rs2_unsigned) {
+			int32_t rs2_signed = static_cast<int32_t>(v2);
 			if (rs2_signed < 0) {
 				modified = true;
 				return imm;
 			}
-			if (rs1.data >= static_cast<uint32_t>(rs2_signed)) {
+			if (v1 >= static_cast<uint32_t>(rs2_signed)) {
 				modified = true;
 				return imm;
 			}
 			return 0;
 		}
 
-		int32_t rs1_signed = static_cast<int32_t>(rs1.data);
+		int32_t rs1_signed = static_cast<int32_t>(v1);
 		if (rs1_signed < 0) return 0;
-		if (static_cast<uint32_t>(rs1_signed) >= rs2.data) {
+		if (static_cast<uint32_t>(rs1_signed) >= v2) {
 			modified = true;
 			return imm;
 		}
