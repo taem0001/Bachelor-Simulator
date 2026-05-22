@@ -186,16 +186,16 @@ namespace Simulator {
 
 	Register _mulh_instruction(Register &rs1, Register &rs2) {
 		uint64_t data;
-		if(!is_unsigned(rs1.tag) || !is_unsigned(rs2.tag)) {
-			if(is_unsigned(rs1.tag)) {
-				data = ((int64_t) rs1.data * (int64_t)(int32_t)rs2.data);
-			} else if(is_unsigned(rs2.tag)) {
-				data = ((int64_t)(int32_t)rs1.data * (int64_t) rs2.data);
+		if (!is_unsigned(rs1.tag) || !is_unsigned(rs2.tag)) {
+			if (is_unsigned(rs1.tag)) {
+				data = ((int64_t)rs1.data * (int64_t)(int32_t)rs2.data);
+			} else if (is_unsigned(rs2.tag)) {
+				data = ((int64_t)(int32_t)rs1.data * (int64_t)rs2.data);
 			} else {
 				data = ((int64_t)(int32_t)rs1.data * (int64_t)(int32_t)rs2.data);
 			}
 		} else {
-			data = ((uint64_t) rs1.data * (uint64_t) rs2.data);
+			data = ((uint64_t)rs1.data * (uint64_t)rs2.data);
 		}
 		const uint32_t res_data = (data >> 32);
 		Tag res_tag = (rs1.tag == Tag::UW || rs2.tag == Tag::UW) ? Tag::UW : Tag::SW;
@@ -203,12 +203,12 @@ namespace Simulator {
 		return result;
 	}
 
-    void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
+	void CPU::r_instruction(const char rd, const char func3, const char rs1, const char rs2, const char func7) {
 		switch (func3) {
 		case 0x0: // ADD
 		{
 			Register result;
-			if(func7 == 0b0000001) {
+			if (func7 == 0b0000001) {
 				result = _mul_instruction(registers[rs1], registers[rs2]);
 			} else {
 				result = _add_instruction(registers[rs1], registers[rs2]);
@@ -218,7 +218,7 @@ namespace Simulator {
 		case 0x1: // SUB
 		{
 			Register result;
-			if(func7 == 0b0000001) {
+			if (func7 == 0b0000001) {
 				result = _mulh_instruction(registers[rs1], registers[rs2]);
 			} else {
 				result = _sub_instruction(registers[rs1], registers[rs2]);
@@ -230,16 +230,10 @@ namespace Simulator {
 			Register result = _slt_instruction(registers[rs1], registers[rs2]);
 			write_to_register(rd, result);
 		} break;
-		case 0x5: // SL or SR
+		case 0x3: // SR
 		{
-			if (func7 == 0b0100000) { // SR
-				Register result = _sr_instruction(registers[rs1], registers[rs2]);
-				write_to_register(rd, result);
-			}
-			if (func7 == 0) { // SL
-				Register result = _sl_instruction(registers[rs1], registers[rs2]);
-				write_to_register(rd, result);
-			}
+			Register result = _sr_instruction(registers[rs1], registers[rs2]);
+			write_to_register(rd, result);
 		} break;
 		case 0x4: // XOR
 		{
@@ -250,6 +244,11 @@ namespace Simulator {
 				Register result = _xor_instruction(registers[rs1], registers[rs2]);
 				write_to_register(rd, result);
 			}
+		} break;
+		case 0x5: // SL
+		{
+			Register result = _sl_instruction(registers[rs1], registers[rs2]);
+			write_to_register(rd, result);
 		} break;
 		case 0x6: // OR
 		{
