@@ -17,10 +17,10 @@ namespace Test::Unit {
 		return passed_data && passed_tag;
 	}
 
-	bool LuiTester::i8_test() { return lui_test(0, Simulator::Tag::SB, 0x00001u, 0x00001000u, Simulator::Tag::SB); }
-	bool LuiTester::i16_test() { return lui_test(1, Simulator::Tag::SH, 0x00123u, 0x00123000u, Simulator::Tag::SH); }
+	bool LuiTester::i8_test() { return lui_test(0, Simulator::Tag::SB, 0x00001u, 0x00001000u, Simulator::Tag::SW); }
+	bool LuiTester::i16_test() { return lui_test(1, Simulator::Tag::SH, 0x00123u, 0x00123000u, Simulator::Tag::SW); }
 	bool LuiTester::i32_test() { return lui_test(2, Simulator::Tag::SW, 0x12345u, 0x12345000u, Simulator::Tag::SW); }
-	bool LuiTester::ui8_test() { return lui_test(3, Simulator::Tag::UB, 0x00FF0u, 0x00FF0000u, Simulator::Tag::UB); }
-	bool LuiTester::ui16_test() { return lui_test(4, Simulator::Tag::UH, 0x54321u, 0x54321000u, Simulator::Tag::UH); }
-	bool LuiTester::ui32_test() { return lui_test(5, Simulator::Tag::UW, 0xABCDEu, 0xABCDE000u, Simulator::Tag::UW); }
+	bool LuiTester::ui8_test() { return lui_test(3, Simulator::Tag::UB, 0x00FF0u, 0x00FF0000u, Simulator::Tag::SW); }
+	bool LuiTester::ui16_test() { return lui_test(4, Simulator::Tag::UH, 0x54321u, 0x54321000u, Simulator::Tag::SW); }
+	bool LuiTester::ui32_test() { return lui_test(5, Simulator::Tag::UW, 0xABCDEu, 0xABCDE000u, Simulator::Tag::SW); }
 } // namespace Test::Unit

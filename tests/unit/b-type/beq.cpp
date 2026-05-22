@@ -13,12 +13,12 @@ namespace Test::Unit {
 		cpu.execute_instruction(BEQ_X5_X6_12);
 
 		int pc_after;
-        bool pc_modified = cpu.get_pc_modified();
+		bool pc_modified = cpu.get_pc_modified();
 		if (should_branch) {
-            pc_after = cpu.get_pc();
+			pc_after = cpu.get_pc();
 			return pc_after == pc_before + 12 && pc_modified;
 		} else {
-            pc_after = cpu.get_pc() + 4;
+			pc_after = cpu.get_pc() + 4;
 			return pc_after == pc_before + 4 && !pc_modified;
 		}
 	}
@@ -54,6 +54,48 @@ namespace Test::Unit {
 
 	bool BeqTester::ui32_ui32_equal_test() {
 		return beq_test(4000000000, 4000000000, Simulator::Tag::UW, Simulator::Tag::UW, true);
+	}
+	bool BeqTester::i8_i16_equal_test() { return beq_test(12, 12, Simulator::Tag::SB, Simulator::Tag::SH, true); }
+	bool BeqTester::i8_i32_equal_test() { return beq_test(100, 100, Simulator::Tag::SB, Simulator::Tag::SW, true); }
+	bool BeqTester::i8_ui8_equal_test() { return beq_test(50, 50, Simulator::Tag::SB, Simulator::Tag::UB, true); }
+	bool BeqTester::i8_ui16_equal_test() { return beq_test(10, 10, Simulator::Tag::SB, Simulator::Tag::UH, true); }
+	bool BeqTester::i8_ui32_equal_test() { return beq_test(1, 1, Simulator::Tag::SB, Simulator::Tag::UW, true); }
+	bool BeqTester::i16_i8_equal_test() { return beq_test(12, 12, Simulator::Tag::SH, Simulator::Tag::SB, true); }
+	bool BeqTester::i16_i32_equal_test() { return beq_test(300, 300, Simulator::Tag::SH, Simulator::Tag::SW, true); }
+	bool BeqTester::i16_ui8_equal_test() { return beq_test(12, 12, Simulator::Tag::SH, Simulator::Tag::UB, true); }
+	bool BeqTester::i16_ui16_equal_test() { return beq_test(600, 600, Simulator::Tag::SH, Simulator::Tag::UH, true); }
+	bool BeqTester::i16_ui32_equal_test() { return beq_test(500, 500, Simulator::Tag::SH, Simulator::Tag::UW, true); }
+	bool BeqTester::i32_i8_equal_test() { return beq_test(5, 5, Simulator::Tag::SW, Simulator::Tag::SB, true); }
+	bool BeqTester::i32_i16_equal_test() { return beq_test(100, 100, Simulator::Tag::SW, Simulator::Tag::SH, true); }
+	bool BeqTester::i32_ui8_equal_test() { return beq_test(10, 10, Simulator::Tag::SW, Simulator::Tag::UB, true); }
+	bool BeqTester::i32_ui16_equal_test() { return beq_test(20, 20, Simulator::Tag::SW, Simulator::Tag::UH, true); }
+	bool BeqTester::i32_ui32_equal_test() {
+		return beq_test(123456789, 123456789, Simulator::Tag::SW, Simulator::Tag::UW, true);
+	}
+	bool BeqTester::ui8_i8_equal_test() { return beq_test(50, 50, Simulator::Tag::UB, Simulator::Tag::SB, true); }
+	bool BeqTester::ui8_i16_equal_test() { return beq_test(100, 100, Simulator::Tag::UB, Simulator::Tag::SH, true); }
+	bool BeqTester::ui8_i32_equal_test() { return beq_test(10, 10, Simulator::Tag::UB, Simulator::Tag::SW, true); }
+	bool BeqTester::ui8_ui16_equal_test() { return beq_test(200, 200, Simulator::Tag::UB, Simulator::Tag::UH, true); }
+	bool BeqTester::ui8_ui32_equal_test() { return beq_test(2, 2, Simulator::Tag::UB, Simulator::Tag::UW, true); }
+
+	bool BeqTester::ui16_i8_equal_test() { return beq_test(60, 60, Simulator::Tag::UH, Simulator::Tag::SB, true); }
+	bool BeqTester::ui16_i16_equal_test() {
+		return beq_test(30000, 30000, Simulator::Tag::UH, Simulator::Tag::SH, true);
+	}
+	bool BeqTester::ui16_i32_equal_test() { return beq_test(1000, 1000, Simulator::Tag::UH, Simulator::Tag::SW, true); }
+	bool BeqTester::ui16_ui8_equal_test() { return beq_test(200, 200, Simulator::Tag::UH, Simulator::Tag::UB, true); }
+	bool BeqTester::ui16_ui32_equal_test() {
+		return beq_test(65000, 65000, Simulator::Tag::UH, Simulator::Tag::UW, true);
+	}
+
+	bool BeqTester::ui32_i8_equal_test() { return beq_test(3, 3, Simulator::Tag::UW, Simulator::Tag::SB, true); }
+	bool BeqTester::ui32_i16_equal_test() { return beq_test(7, 7, Simulator::Tag::UW, Simulator::Tag::SH, true); }
+	bool BeqTester::ui32_i32_equal_test() {
+		return beq_test(3000000000, 3000000000, Simulator::Tag::UW, Simulator::Tag::SW, true);
+	}
+	bool BeqTester::ui32_ui8_equal_test() { return beq_test(2, 2, Simulator::Tag::UW, Simulator::Tag::UB, true); }
+	bool BeqTester::ui32_ui16_equal_test() {
+		return beq_test(60000, 60000, Simulator::Tag::UW, Simulator::Tag::UH, true);
 	}
 	bool BeqTester::ui32_ui32_not_equal_test() {
 		return beq_test(4000000000, 123456789, Simulator::Tag::UW, Simulator::Tag::UW, false);
@@ -95,9 +137,6 @@ namespace Test::Unit {
 	bool BeqTester::i32_ui8_not_equal_test() { return beq_test(-5, 10, Simulator::Tag::SW, Simulator::Tag::UB, false); }
 	bool BeqTester::i32_ui16_not_equal_test() {
 		return beq_test(-1000, 60000, Simulator::Tag::SW, Simulator::Tag::UH, false);
-	}
-	bool BeqTester::mixed_tag_equal_test() {
-		return beq_test(32, 32, Simulator::Tag::SB, Simulator::Tag::UW, true);
 	}
 	bool BeqTester::i32_ui32_not_equal_test() {
 		return beq_test(-1, 4000000000, Simulator::Tag::SW, Simulator::Tag::UW, false);

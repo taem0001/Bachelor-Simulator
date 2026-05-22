@@ -25,21 +25,21 @@ namespace Test::Unit {
 	}
 
 	bool AuipcTester::i8_test() {
-		return auipc_test(0, Simulator::Tag::SB, 12, 0x00001u, 0x0000100Cu, Simulator::Tag::SB);
+		return auipc_test(0, Simulator::Tag::SB, 12, 0x00001u, 0x0000100Cu, Simulator::Tag::SW);
 	}
 	bool AuipcTester::i16_test() {
-		return auipc_test(1, Simulator::Tag::SH, 16, 0x00123u, 0x00123010u, Simulator::Tag::SH);
+		return auipc_test(1, Simulator::Tag::SH, 16, 0x00123u, 0x00123010u, Simulator::Tag::SW);
 	}
 	bool AuipcTester::i32_test() {
 		return auipc_test(2, Simulator::Tag::SW, 20, 0x12345u, 0x12345014u, Simulator::Tag::SW);
 	}
 	bool AuipcTester::ui8_test() {
-		return auipc_test(3, Simulator::Tag::UB, 24, 0x00FF0u, 0x00FF0018u, Simulator::Tag::UB);
+		return auipc_test(3, Simulator::Tag::UB, 24, 0x00FF0u, 0x00FF0018u, Simulator::Tag::SW);
 	}
 	bool AuipcTester::ui16_test() {
-		return auipc_test(4, Simulator::Tag::UH, 28, 0x54321u, 0x5432101Cu, Simulator::Tag::UH);
+		return auipc_test(4, Simulator::Tag::UH, 28, 0x54321u, 0x5432101Cu, Simulator::Tag::SW);
 	}
 	bool AuipcTester::ui32_test() {
-		return auipc_test(5, Simulator::Tag::UW, 32, 0xABCDEu, 0xABCDE020u, Simulator::Tag::UW);
+		return auipc_test(5, Simulator::Tag::UW, 32, 0xABCDEu, 0xABCDE020u, Simulator::Tag::SW);
 	}
 } // namespace Test::Unit

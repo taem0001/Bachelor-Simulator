@@ -10,7 +10,7 @@ namespace Simulator {
 		pc += real_imm;
 		pc_modified = true;
 
-		Register res = {.data = val, .tag = registers[rd].tag};
+		Register res = {.data = val, .tag = Tag::SW};
 		write_to_register(rd, res);
     }
 } // namespace Simulator

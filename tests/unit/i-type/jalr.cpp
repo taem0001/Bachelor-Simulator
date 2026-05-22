@@ -22,21 +22,21 @@ namespace Test::Unit {
 	}
 
 	bool JalrTester::i8_test() {
-		return jalr_test(100, Simulator::Tag::SB, Simulator::Tag::SB, 12, 112, 4, Simulator::Tag::SB);
+		return jalr_test(100, Simulator::Tag::SB, Simulator::Tag::SB, 12, 112, 4, Simulator::Tag::SW);
 	}
 	bool JalrTester::i16_test() {
-		return jalr_test(1024, Simulator::Tag::SH, Simulator::Tag::SH, -8, 1016, 4, Simulator::Tag::SH);
+		return jalr_test(1024, Simulator::Tag::SH, Simulator::Tag::SH, -8, 1016, 4, Simulator::Tag::SW);
 	}
 	bool JalrTester::i32_test() {
 		return jalr_test(400000, Simulator::Tag::SW, Simulator::Tag::SW, 16, 400016, 4, Simulator::Tag::SW);
 	}
 	bool JalrTester::ui8_test() {
-		return jalr_test(41, Simulator::Tag::UB, Simulator::Tag::UB, 4, 44, 4, Simulator::Tag::UB);
+		return jalr_test(41, Simulator::Tag::UB, Simulator::Tag::UB, 4, 44, 4, Simulator::Tag::SW);
 	}
 	bool JalrTester::ui16_test() {
-		return jalr_test(60000, Simulator::Tag::UH, Simulator::Tag::UH, -20, 59980, 4, Simulator::Tag::UH);
+		return jalr_test(60000, Simulator::Tag::UH, Simulator::Tag::UH, -20, 59980, 4, Simulator::Tag::SW);
 	}
 	bool JalrTester::ui32_test() {
-		return jalr_test(3000000000u, Simulator::Tag::UW, Simulator::Tag::UW, 64, 3000000064u, 4, Simulator::Tag::UW);
+		return jalr_test(3000000000u, Simulator::Tag::UW, Simulator::Tag::UW, 64, 3000000064u, 4, Simulator::Tag::SW);
 	}
 } // namespace Test::Unit

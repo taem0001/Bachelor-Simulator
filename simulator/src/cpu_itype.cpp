@@ -127,7 +127,7 @@ namespace Simulator {
 		pc = static_cast<int>((registers[rs1].data + static_cast<uint32_t>(imm12)) & ~1u);
 		pc_modified = true;
 
-		Register res = {.data = val, .tag = registers[rd].tag};
+		Register res = {.data = val, .tag = Tag::SW};
 		write_to_register(rd, res);
 	}
 } // namespace Simulator

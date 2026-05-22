@@ -24,10 +24,10 @@ namespace Test::Unit {
 		return passed_pc && passed_pc_modified && passed_data && passed_tag;
 	}
 
-	bool JalTester::i8_test() { return jal_test(0, Simulator::Tag::SB, 12, 12, 4, Simulator::Tag::SB); }
-	bool JalTester::i16_test() { return jal_test(1, Simulator::Tag::SH, 256, 256, 4, Simulator::Tag::SH); }
+	bool JalTester::i8_test() { return jal_test(0, Simulator::Tag::SB, 12, 12, 4, Simulator::Tag::SW); }
+	bool JalTester::i16_test() { return jal_test(1, Simulator::Tag::SH, 256, 256, 4, Simulator::Tag::SW); }
 	bool JalTester::i32_test() { return jal_test(2, Simulator::Tag::SW, 1024, 1024, 4, Simulator::Tag::SW); }
-	bool JalTester::ui8_test() { return jal_test(3, Simulator::Tag::UB, 40, 40, 4, Simulator::Tag::UB); }
-	bool JalTester::ui16_test() { return jal_test(4, Simulator::Tag::UH, 60000, 60000, 4, Simulator::Tag::UH); }
-	bool JalTester::ui32_test() { return jal_test(5, Simulator::Tag::UW, 500000, 500000, 4, Simulator::Tag::UW); }
+	bool JalTester::ui8_test() { return jal_test(3, Simulator::Tag::UB, 40, 40, 4, Simulator::Tag::SW); }
+	bool JalTester::ui16_test() { return jal_test(4, Simulator::Tag::UH, 60000, 60000, 4, Simulator::Tag::SW); }
+	bool JalTester::ui32_test() { return jal_test(5, Simulator::Tag::UW, 500000, 500000, 4, Simulator::Tag::SW); }
 } // namespace Test::Unit
