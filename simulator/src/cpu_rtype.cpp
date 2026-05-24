@@ -101,10 +101,6 @@ namespace Simulator {
 		return result;
 	}
 
-	static bool _promotes_to_unsigned(const Register &reg) {
-		return width_of(reg.tag) == TAG_WORD && is_unsigned(reg.tag);
-	}
-
 	static int32_t _promoted_signed_value(const Register &reg) {
 		switch (width_of(reg.tag)) {
 		case TAG_BYTE: {
@@ -134,14 +130,16 @@ namespace Simulator {
 	}
 
 	Register _div_instruction(const Register &rs1, const Register &rs2) {
-		const bool is_result_unsigned = _promotes_to_unsigned(rs1) || _promotes_to_unsigned(rs2);
-		const Tag res_tag = is_result_unsigned ? Tag::UW : Tag::SW;
+		const Tag t1 = rs1.tag;
+		const Tag t2 = rs2.tag;
+
+		const Tag res_tag = (t1 == Tag::UW || t2 == Tag::UW) ? Tag::UW : Tag::SW;
 
 		if (rs2.data == 0) {
 			return {0xFFFFFFFFu, res_tag};
 		}
 
-		if (is_result_unsigned) {
+		if (t1 == Tag::UW || t2 == Tag::UW) {
 			const uint32_t dividend = _promoted_unsigned_value(rs1);
 			const uint32_t divisor = _promoted_unsigned_value(rs2);
 			return {dividend / divisor, res_tag};
@@ -156,14 +154,16 @@ namespace Simulator {
 	}
 
 	Register _rem_instruction(const Register &rs1, const Register &rs2) {
-		const bool is_result_unsigned = _promotes_to_unsigned(rs1) || _promotes_to_unsigned(rs2);
-		const Tag res_tag = is_result_unsigned ? Tag::UW : Tag::SW;
+		const Tag t1 = rs1.tag;
+		const Tag t2 = rs2.tag;
+
+		const Tag res_tag = (t1 == Tag::UW || t2 == Tag::UW) ? Tag::UW : Tag::SW;
 
 		if (rs2.data == 0) {
 			return {_promoted_unsigned_value(rs1), res_tag};
 		}
 
-		if (is_result_unsigned) {
+		if (t1 == Tag::UW || t2 == Tag::UW) {
 			const uint32_t dividend = _promoted_unsigned_value(rs1);
 			const uint32_t divisor = _promoted_unsigned_value(rs2);
 			return {dividend % divisor, res_tag};
