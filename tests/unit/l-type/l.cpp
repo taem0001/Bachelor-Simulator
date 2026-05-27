@@ -21,5 +21,5 @@ namespace Test::Unit {
     bool LTester::i32_test() { return l_test(0b010, Simulator::Tag::SW, -10000, Simulator::Tag::SW, -10000); }
     bool LTester::ui8_test() { return l_test(0b100, Simulator::Tag::UB, 30, Simulator::Tag::UB, 30); }
     bool LTester::ui16_test() { return l_test(0b101, Simulator::Tag::UH, 1000, Simulator::Tag::UH, 1000); }
-    bool LTester::ui32_test() { return l_test(0b111, Simulator::Tag::UW, 10000, Simulator::Tag::UW, 10000); }
+    bool LTester::ui32_test() { return l_test(0b110, Simulator::Tag::UW, 10000, Simulator::Tag::UW, 10000); }
 }

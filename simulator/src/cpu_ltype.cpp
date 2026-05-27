@@ -8,7 +8,7 @@ namespace Simulator {
         case 0x2: return Tag::SW;
         case 0x4: return Tag::UB;
         case 0x5: return Tag::UH;
-        case 0x7: return Tag::UW;
+        case 0x6: return Tag::UW;
         default: return Tag::SW;
         }
     }
@@ -67,7 +67,8 @@ namespace Simulator {
                 uint32_t result = memory[addr] | (memory[addr + 1] << 8);
                 write_to_register(rd, {result, load_tag_from_func3(func3)});
             } break;
-            case 0x7: { // LWU
+            case 0x6: { // LWU
+                std::cout << "Inside LWU\n";
                 if (addr + 3 >= MEMORY_SIZE_BYTES) {
                     std::cerr << "ERROR: Load word unsigned instruction out of bounds at address 0x" << std::hex << addr << std::endl;
                     std::exit(1);
@@ -77,6 +78,19 @@ namespace Simulator {
                                 | (memory[addr + 2] << 16)
                                 | (memory[addr + 3] << 24);
                 write_to_register(rd, {result, load_tag_from_func3(func3)});
+            } break;
+            case 0x7: {
+                if(addr + 4 >= MEMORY_SIZE_BYTES) {
+                    std::cerr << "ERROR: Load TAG instruction out of bounds at address 0x" << std::hex << addr << std::endl;
+                    std::exit(1);
+                }
+                uint32_t result = memory[addr]
+                                | (memory[addr + 1] << 8)
+                                | (memory[addr + 2] << 16)
+                                | (memory[addr + 3] << 24);
+                uint8_t raw_tag = memory[addr + 4] & 0b111;
+                Tag tag = static_cast<Tag>(raw_tag);
+                write_to_register(rd, {result, tag});
             } break;
             default:
                 break;

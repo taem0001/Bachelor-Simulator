@@ -3,6 +3,10 @@
 namespace Simulator {
 	CPU::CPU() : program_size_bytes(0), pc(0), pc_modified(false), ebreak(false) {
 		registers.fill({0, Tag::SW});
+
+		// x1 / ra should hold return addresses, so use unsigned word tag.
+		//registers[1] = {0, Tag::UW};
+
 		// Initialize stack pointer (x2) to top of simulated memory.
 		registers[2] = {MEMORY_SIZE_BYTES, Tag::UW};
 	}
@@ -62,6 +66,7 @@ namespace Simulator {
 								   (static_cast<uint32_t>(memory[pc + 3]) << 24);
 			pc_modified = false;
 			ebreak = false;
+			//std::cerr << "Tryin to execute with pc: " << pc << std::endl;
 			execute_instruction(instr);
 			if (ebreak) break;
 			if (!pc_modified) pc += INSTR_SIZE_BYTES;
