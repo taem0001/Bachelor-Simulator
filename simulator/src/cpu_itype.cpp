@@ -80,6 +80,12 @@ namespace Simulator {
 			Register result = _addi_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
+		case 0x1: // SLI
+		{
+			if (((imm >> 5) & 0x7F) != 0) break;
+			Register result = _sli_instruction(registers[rs1], imm & 0x1F);
+			write_to_register(rd, result);
+		} break;
 		case 0x2: // SLTI
 		{
 			Register result = _slti_instruction(registers[rs1], imm12);
@@ -90,6 +96,12 @@ namespace Simulator {
 			Register result = _xori_instruction(registers[rs1], imm12);
 			write_to_register(rd, result);
 		} break;
+		case 0x5: // SRI
+		{
+			if (((imm >> 5) & 0x7F) != 0) break;
+			Register result = _sri_instruction(registers[rs1], imm & 0x1F);
+			write_to_register(rd, result);
+		} break;
 		case 0x6: // ORI
 		{
 			Register result = _ori_instruction(registers[rs1], imm12);
@@ -98,18 +110,6 @@ namespace Simulator {
 		case 0x7: // ANDI
 		{
 			Register result = _andi_instruction(registers[rs1], imm12);
-			write_to_register(rd, result);
-		} break;
-		case 0x1: // SLI
-		{
-			if (((imm >> 5) & 0x7F) != 0) break;
-			Register result = _sli_instruction(registers[rs1], imm & 0x1F);
-			write_to_register(rd, result);
-		} break;
-		case 0x5: // SRI
-		{
-			if (((imm >> 5) & 0x7F) != 0) break;
-			Register result = _sri_instruction(registers[rs1], imm & 0x1F);
 			write_to_register(rd, result);
 		} break;
 		default:

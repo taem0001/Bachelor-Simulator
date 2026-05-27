@@ -1,7 +1,7 @@
 #include "sr.hpp"
 
 namespace Test::Unit {
-    static constexpr uint32_t SR_X15_X18_X29 = 0b01000001110110010101011110110011;
+    static constexpr uint32_t SR_X15_X18_X29 = 0b00000001110110010011011110110011;
 
     static bool sr_test(uint32_t a_val, uint32_t b_val, Simulator::Tag a_tag, Simulator::Tag b_tag,
                         uint32_t expected_val, Simulator::Tag expected_tag) {
