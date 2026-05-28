@@ -1,7 +1,7 @@
 #include "ctsw.hpp"
 
 namespace Test::Unit {
-    static constexpr uint32_t CTSW_X9 = 0b00001100000000000000010011111011;
+    static constexpr uint32_t CTSW_X9 = 0x000064FB; // func3=6, rd=9, opcode=0x7B
 
     static bool ctsw_test(Simulator::Tag a_tag, Simulator::Tag expected_tag) {
         Simulator::CPU cpu;

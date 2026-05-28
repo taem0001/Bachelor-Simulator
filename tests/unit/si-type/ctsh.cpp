@@ -1,7 +1,7 @@
 #include "ctsh.hpp"
 
 namespace Test::Unit {
-    static constexpr uint32_t CTSH_X9 = 0b00001010000000000000010011111011;
+    static constexpr uint32_t CTSH_X9 = 0x000054FB; // func3=5, rd=9, opcode=0x7B
 
     static bool ctsh_test(Simulator::Tag a_tag, Simulator::Tag expected_tag) {
         Simulator::CPU cpu;

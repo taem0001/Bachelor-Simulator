@@ -1,7 +1,7 @@
 #include "ctuh.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t CTUH_X9 = 0b00000010000000000000010011111011;
+	static constexpr uint32_t CTUH_X9 = 0x000014FB; // func3=1, rd=9, opcode=0x7B
 
 	static bool ctuh_test(Simulator::Tag a_tag, Simulator::Tag expected_tag) {
 		Simulator::CPU cpu;

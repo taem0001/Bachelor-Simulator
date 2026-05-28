@@ -52,8 +52,8 @@ namespace Simulator {
 		return {res_data, res_tag};
 	}
 
-	void CPU::si_instruction(const char rd, const char func7) {
-		switch (func7) {
+	void CPU::si_instruction(const char rd, const char func3) {
+		switch (func3) {
 		case 0x0: // CTUB
 		{
 			Register result = _cast_to_another_tag(registers[rd], Tag::UB);

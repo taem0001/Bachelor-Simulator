@@ -1,7 +1,7 @@
 #include "ctub.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t CTUB_X9 = 0b00000000000000000000010011111011;
+	static constexpr uint32_t CTUB_X9 = 0x000004FB; // func3=0, rd=9, opcode=0x7B
 
 	static bool ctub_test(Simulator::Tag a_tag, Simulator::Tag expected_tag) {
 		Simulator::CPU cpu;

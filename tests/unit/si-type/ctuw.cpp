@@ -1,7 +1,7 @@
 #include "ctuw.hpp"
 
 namespace Test::Unit {
-	static constexpr uint32_t CTUW_X9 = 0b00000100000000000000010011111011;
+	static constexpr uint32_t CTUW_X9 = 0x000024FB; // func3=2, rd=9, opcode=0x7B
 
 	static bool ctuw_test(Simulator::Tag a_tag, Simulator::Tag expected_tag) {
 		Simulator::CPU cpu;
