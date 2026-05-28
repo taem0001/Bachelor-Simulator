@@ -68,7 +68,6 @@ namespace Simulator {
                 write_to_register(rd, {result, load_tag_from_func3(func3)});
             } break;
             case 0x6: { // LWU
-                std::cout << "Inside LWU\n";
                 if (addr + 3 >= MEMORY_SIZE_BYTES) {
                     std::cerr << "ERROR: Load word unsigned instruction out of bounds at address 0x" << std::hex << addr << std::endl;
                     std::exit(1);

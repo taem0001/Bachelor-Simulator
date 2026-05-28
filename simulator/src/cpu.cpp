@@ -20,7 +20,6 @@ namespace Simulator {
 	void CPU::set_register(const char rd, const uint32_t data, const Tag &tag) { write_to_register(rd, {data, tag}); }
 
 	void CPU::set_memory(uint32_t addr, uint32_t data, Tag tag) {
-		(void)tag;
 		memory[addr] = data & 0xFF;
 		switch (tag) {
 		case Tag::UH:

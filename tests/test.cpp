@@ -28,11 +28,11 @@ int main(int argc, char *argv[]) {
 		if (argv[1][1] == 'i') {
 			si_tests(stats);
 		} else {
-			s_test(stats);
+			s_tests(stats);
 		}
 		break;
 	case 'l':
-		l_test(stats);
+		l_tests(stats);
 		break;
 	case 'j':
 		jal_test(stats);
@@ -48,9 +48,9 @@ int main(int argc, char *argv[]) {
 		r_tests(stats);
 		i_tests(stats);
 		si_tests(stats);
-		l_test(stats);
+		l_tests(stats);
 		jal_test(stats);
-		s_test(stats);
+		s_tests(stats);
 		u_tests(stats);
 		x_tests(stats);
 	}
